@@ -1,4 +1,4 @@
-name: CI — Tests & Qualité
+name: CI - Tests et Qualite
 
 on:
   push:
@@ -11,7 +11,6 @@ on:
       - main
 
 jobs:
-
   test:
     name: Tests Symfony
     runs-on: ubuntu-latest
@@ -31,7 +30,6 @@ jobs:
           --health-retries=10
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -49,7 +47,7 @@ jobs:
       - name: Composer version
         run: composer --version
 
-      - name: Validate composer.json
+      - name: Validate composer
         run: composer validate --strict
 
       - name: Install dependencies
@@ -67,7 +65,7 @@ jobs:
           DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4
         run: php bin/console cache:clear
 
-      - name: Validate Doctrine mapping
+      - name: Validate Doctrine
         env:
           APP_ENV: test
           DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4
@@ -83,13 +81,11 @@ jobs:
           DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4
         run: vendor/bin/phpunit
 
-
   code-quality:
-    name: Qualité du code
+    name: Qualite du code
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
