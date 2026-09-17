@@ -245,4 +245,3 @@ class AdminStatsService
         return (float) ($result ?? 0);
     }
 }
-
