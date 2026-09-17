@@ -1,0 +1,46 @@
+name: CD — Déploiement Production
+
+on:
+  workflow_run:
+    workflows: ["CD — Build & Push Docker"]
+    types:
+      - completed
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/garagepro
+            docker-compose -f docker-compose.prod.yml pull
+            docker-compose -f docker-compose.prod.yml up -d --remove-orphans
+            docker-compose -f docker-compose.prod.yml exec -T php php bin/console doctrine:migrations:migrate --no-interaction
+            docker-compose -f docker-compose.prod.yml exec -T php php bin/console cache:clear
+            docker system prune -f
+
+      - name: Health Check
+        run: |
+          sleep 10
+          curl -f https://${{ secrets.APP_DOMAIN }}/api/health || exit 1
+
+      - name: Notify Slack
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: '#deployments'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

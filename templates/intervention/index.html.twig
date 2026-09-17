@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Interventions — GaragePro{% endblock %}
+
+{% block body %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white">
+        🔩 Interventions
+    </h2>
+
+
+<a href="{{ path('app_intervention_new') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg me-1"></i>
+    Nouvelle fiche
+</a>
+
+
+</div>
+
+<div class="gp-card p-0 overflow-hidden">
+
+
+<div class="table-responsive">
+    <table class="table table-dark-custom mb-0">
+
+        <thead>
+            <tr>
+                <th>Référence</th>
+                <th>Véhicule</th>
+                <th>Description</th>
+                <th>Statut</th>
+                <th>Date</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for i in interventions %}
+
+            <tr>
+
+                <td class="font-monospace text-info">
+                    {{ i.reference }}
+                </td>
+
+                <td>
+                    {% if i.vehicle %}
+                        {{ i.vehicle.brand }} {{ i.vehicle.model }}
+                    {% else %}
+                        <span class="text-muted">Aucun véhicule</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if i.description %}
+                        {{ i.description|slice(0, 40) }}{% if i.description|length > 40 %}...{% endif %}
+                    {% else %}
+                        <span class="text-muted">Aucune description</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if i.status == 'completed' %}
+                        <span class="badge bg-success">
+                            Terminée
+                        </span>
+
+                    {% elseif i.status == 'in_progress' %}
+                        <span class="badge bg-primary">
+                            En cours
+                        </span>
+
+                    {% elseif i.status == 'pending' %}
+                        <span class="badge bg-secondary">
+                            En attente
+                        </span>
+
+                    {% else %}
+                        <span class="badge bg-warning text-dark">
+                            {{ i.status }}
+                        </span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if i.scheduledAt %}
+                        {{ i.scheduledAt|date('d/m/Y H:i') }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td class="text-end">
+                    <a
+                        href="{{ path('app_intervention_show', {id: i.id}) }}"
+                        class="btn btn-sm btn-outline-primary"
+                    >
+                        <i class="bi bi-eye me-1"></i>
+                        Détails
+                    </a>
+                </td>
+
+            </tr>
+
+        {% else %}
+
+            <tr>
+                <td colspan="6" class="text-center text-muted py-5">
+                    <i class="bi bi-tools fs-1 d-block mb-3"></i>
+                    Aucune intervention enregistrée.
+                </td>
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+</div>
+```
+
+</div>
+
+{% endblock %}

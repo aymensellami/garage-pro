@@ -1,0 +1,596 @@
+{# templates/dashboard/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon espace — GaragePro{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid px-3 px-lg-4 py-4">
+
+    {# ==================== EN-TÊTE ==================== #}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-1">
+                <i class="bi bi-speedometer2 me-2"></i>
+                Mon espace
+            </h1>
+
+            <p class="text-muted mb-0">
+                {% if customer %}
+                    Bonjour <strong>{{ customer.firstName }}</strong> 👋
+                    Bienvenue dans votre espace GaragePro.
+                {% else %}
+                    Bonjour 👋
+                    Bienvenue dans votre espace GaragePro.
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="text-md-end">
+            <div class="text-muted small">
+                <i class="bi bi-calendar3 me-1"></i>
+                {{ "now"|date("d/m/Y") }}
+            </div>
+        </div>
+    </div>
+
+    {# ==================== CLIENT NON ASSOCIÉ ==================== #}
+    {% if not customer %}
+
+        <div class="alert alert-warning d-flex align-items-start gap-3 shadow-sm">
+            <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+
+            <div>
+                <h5 class="alert-heading mb-1">
+                    Profil client non trouvé
+                </h5>
+
+                <p class="mb-0">
+                    Votre compte utilisateur n'est pas encore associé
+                    à un profil client GaragePro.
+                    Veuillez contacter l'administration du garage.
+                </p>
+            </div>
+        </div>
+
+    {% else %}
+
+        {# ==================== VÉHICULES ==================== #}
+        <div class="row g-4 mb-4">
+
+            <div class="col-12 col-xl-6">
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pt-4 px-4">
+                        <div>
+                            <h5 class="fw-bold mb-1">
+                                <i class="bi bi-car-front me-2 text-primary"></i>
+                                Mes véhicules
+                            </h5>
+
+                            <small class="text-muted">
+                                Vos véhicules enregistrés
+                            </small>
+                        </div>
+
+                        <a href="{{ path('app_vehicle_new') }}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-plus-lg me-1"></i>
+                            Ajouter
+                        </a>
+                    </div>
+
+                    <div class="card-body px-4">
+
+                        {% if vehicles is not empty %}
+
+                            <div class="list-group list-group-flush">
+
+                                {% for vehicle in vehicles %}
+
+                                    <div class="list-group-item px-0 py-3">
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+
+                                            <div class="d-flex align-items-center gap-3">
+
+                                                <div class="rounded-circle bg-primary bg-opacity-10 text-primary p-3">
+                                                    <i class="bi bi-car-front-fill fs-5"></i>
+                                                </div>
+
+                                                <div>
+                                                    <h6 class="fw-bold mb-1">
+                                                        {{ vehicle.brand }} {{ vehicle.model }}
+                                                    </h6>
+
+                                                    <div class="text-muted small">
+                                                        <i class="bi bi-credit-card-2-front me-1"></i>
+                                                        {{ vehicle.registration }}
+                                                    </div>
+
+                                                    {% if vehicle.year %}
+                                                        <div class="text-muted small">
+                                                            <i class="bi bi-calendar3 me-1"></i>
+                                                            {{ vehicle.year }}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+
+                                            </div>
+
+                                            <a href="{{ path('app_vehicle_show', { id: vehicle.id }) }}"
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye me-1"></i>
+                                                Détails
+                                            </a>
+
+                                        </div>
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% else %}
+
+                            <div class="text-center py-5">
+
+                                <div class="mb-3">
+                                    <i class="bi bi-car-front display-4 text-muted"></i>
+                                </div>
+
+                                <h6 class="fw-bold">
+                                    Aucun véhicule
+                                </h6>
+
+                                <p class="text-muted small mb-3">
+                                    Vous n'avez pas encore ajouté de véhicule.
+                                </p>
+
+                                <a href="{{ path('app_vehicle_new') }}" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle me-1"></i>
+                                    Ajouter mon premier véhicule
+                                </a>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+
+            {# ==================== RENDEZ-VOUS ==================== #}
+            <div class="col-12 col-xl-6">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pt-4 px-4">
+                        <div>
+                            <h5 class="fw-bold mb-1">
+                                <i class="bi bi-calendar-check me-2 text-success"></i>
+                                Mes prochains rendez-vous
+                            </h5>
+
+                            <small class="text-muted">
+                                Vos rendez-vous à venir
+                            </small>
+                        </div>
+
+                        <a href="{{ path('app_appointment_new') }}" class="btn btn-sm btn-success">
+                            <i class="bi bi-plus-lg me-1"></i>
+                            Nouveau
+                        </a>
+                    </div>
+
+                    <div class="card-body px-4">
+
+                        {% if appointments is not empty %}
+
+                            <div class="list-group list-group-flush">
+
+                                {% for appointment in appointments %}
+
+                                    <div class="list-group-item px-0 py-3">
+
+                                        <div class="d-flex justify-content-between align-items-start gap-3">
+
+                                            <div>
+                                                <h6 class="fw-bold mb-1">
+
+                                                    {% if appointment.vehicle %}
+                                                        {{ appointment.vehicle.brand }}
+                                                        {{ appointment.vehicle.model }}
+                                                    {% else %}
+                                                        Véhicule
+                                                    {% endif %}
+
+                                                </h6>
+
+                                                <div class="text-muted small mb-2">
+                                                    <i class="bi bi-calendar3 me-1"></i>
+                                                    {{ appointment.scheduledAt|date('d/m/Y') }}
+
+                                                    <span class="mx-1">•</span>
+
+                                                    <i class="bi bi-clock me-1"></i>
+                                                    {{ appointment.scheduledAt|date('H:i') }}
+                                                </div>
+
+                                                {% if appointment.reason %}
+                                                    <div class="small">
+                                                        <i class="bi bi-tools me-1"></i>
+                                                        {{ appointment.reason }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+
+                                            {% set appointmentStatus = appointment.status %}
+
+                                            {% if appointmentStatus == 'confirmed' %}
+                                                <span class="badge bg-success">
+                                                    Confirmé
+                                                </span>
+                                            {% elseif appointmentStatus == 'requested' %}
+                                                <span class="badge bg-warning text-dark">
+                                                    En attente
+                                                </span>
+                                            {% elseif appointmentStatus == 'in_progress' %}
+                                                <span class="badge bg-primary">
+                                                    En cours
+                                                </span>
+                                            {% elseif appointmentStatus == 'completed' %}
+                                                <span class="badge bg-secondary">
+                                                    Terminé
+                                                </span>
+                                            {% elseif appointmentStatus == 'cancelled' %}
+                                                <span class="badge bg-danger">
+                                                    Annulé
+                                                </span>
+                                            {% elseif appointmentStatus == 'no_show' %}
+                                                <span class="badge bg-dark">
+                                                    Non présenté
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">
+                                                    {{ appointmentStatus }}
+                                                </span>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% else %}
+
+                            <div class="text-center py-5">
+
+                                <div class="mb-3">
+                                    <i class="bi bi-calendar-x display-4 text-muted"></i>
+                                </div>
+
+                                <h6 class="fw-bold">
+                                    Aucun rendez-vous
+                                </h6>
+
+                                <p class="text-muted small mb-3">
+                                    Vous n'avez aucun rendez-vous programmé actuellement.
+                                </p>
+
+                                <a href="{{ path('app_appointment_new') }}" class="btn btn-success">
+                                    <i class="bi bi-calendar-plus me-1"></i>
+                                    Prendre un rendez-vous
+                                </a>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        {# ==================== FACTURES + ALERTES ==================== #}
+        <div class="row g-4">
+
+            {# ==================== FACTURES ==================== #}
+            <div class="col-12 col-xl-6">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pt-4 px-4">
+
+                        <div>
+                            <h5 class="fw-bold mb-1">
+                                <i class="bi bi-receipt me-2 text-info"></i>
+                                Mes dernières factures
+                            </h5>
+
+                            <small class="text-muted">
+                                Historique de vos factures
+                            </small>
+                        </div>
+
+                        <a href="{{ path('app_invoice_index') }}"
+                           class="btn btn-sm btn-outline-info">
+                            Voir tout
+                        </a>
+
+                    </div>
+
+                    <div class="card-body px-4">
+
+                        {% if invoices is not empty %}
+
+                            <div class="table-responsive">
+
+                                <table class="table table-hover align-middle mb-0">
+
+                                    <thead>
+                                        <tr>
+                                            <th>N° Facture</th>
+                                            <th>Date</th>
+                                            <th>Total</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        {% for invoice in invoices %}
+
+                                            <tr>
+
+                                                <td>
+                                                    <a href="{{ path('app_invoice_show', { id: invoice.id }) }}"
+                                                       class="fw-semibold text-decoration-none">
+                                                        {{ invoice.number }}
+                                                    </a>
+                                                </td>
+
+                                                <td class="small text-muted">
+                                                    {% if invoice.issuedAt %}
+                                                        {{ invoice.issuedAt|date('d/m/Y') }}
+                                                    {% else %}
+                                                        —
+                                                    {% endif %}
+                                                </td>
+
+                                                <td class="fw-semibold">
+                                                    {{ invoice.totalTTC|number_format(3, ',', ' ') }}
+                                                    TND
+                                                </td>
+
+                                                <td>
+
+                                                    {% set invoiceStatus = invoice.status %}
+
+                                                    {% if invoiceStatus == 'paid' %}
+                                                        <span class="badge bg-success">
+                                                            Payée
+                                                        </span>
+                                                    {% elseif invoiceStatus == 'partially_paid' %}
+                                                        <span class="badge bg-warning text-dark">
+                                                            Partiellement payée
+                                                        </span>
+                                                    {% elseif invoiceStatus == 'overdue' %}
+                                                        <span class="badge bg-danger">
+                                                            En retard
+                                                        </span>
+                                                    {% elseif invoiceStatus == 'issued' %}
+                                                        <span class="badge bg-primary">
+                                                            Émise
+                                                        </span>
+                                                    {% elseif invoiceStatus == 'sent' %}
+                                                        <span class="badge bg-info">
+                                                            Envoyée
+                                                        </span>
+                                                    {% elseif invoiceStatus == 'draft' %}
+                                                        <span class="badge bg-secondary">
+                                                            Brouillon
+                                                        </span>
+                                                    {% elseif invoiceStatus == 'cancelled' %}
+                                                        <span class="badge bg-dark">
+                                                            Annulée
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">
+                                                            {{ invoiceStatus }}
+                                                        </span>
+                                                    {% endif %}
+
+                                                </td>
+
+                                            </tr>
+
+                                        {% endfor %}
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        {% else %}
+
+                            <div class="text-center py-5">
+
+                                <div class="mb-3">
+                                    <i class="bi bi-receipt display-4 text-muted"></i>
+                                </div>
+
+                                <h6 class="fw-bold">
+                                    Aucune facture
+                                </h6>
+
+                                <p class="text-muted small mb-0">
+                                    Vous n'avez aucune facture enregistrée actuellement.
+                                </p>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+
+            {# ==================== ALERTES ==================== #}
+            <div class="col-12 col-xl-6">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pt-4 px-4">
+
+                        <div>
+                            <h5 class="fw-bold mb-1">
+                                <i class="bi bi-bell me-2 text-danger"></i>
+                                Mes alertes de maintenance
+                            </h5>
+
+                            <small class="text-muted">
+                                Entretien recommandé pour vos véhicules
+                            </small>
+                        </div>
+
+                        <a href="{{ path('app_alert_index') }}"
+                           class="btn btn-sm btn-outline-danger">
+                            Voir tout
+                        </a>
+
+                    </div>
+
+                    <div class="card-body px-4">
+
+                        {% if alerts is not empty %}
+
+                            <div class="list-group list-group-flush">
+
+                                {% for alert in alerts %}
+
+                                    {% set severity = alert.severity %}
+
+                                    {% if severity == 'critical' %}
+                                        {% set alertClass = 'danger' %}
+                                        {% set alertIcon = 'bi-exclamation-octagon-fill' %}
+                                        {% set severityLabel = 'Critique' %}
+                                    {% elseif severity == 'high' %}
+                                        {% set alertClass = 'danger' %}
+                                        {% set alertIcon = 'bi-exclamation-triangle-fill' %}
+                                        {% set severityLabel = 'Élevée' %}
+                                    {% elseif severity == 'medium' %}
+                                        {% set alertClass = 'warning' %}
+                                        {% set alertIcon = 'bi-exclamation-circle-fill' %}
+                                        {% set severityLabel = 'Moyenne' %}
+                                    {% else %}
+                                        {% set alertClass = 'info' %}
+                                        {% set alertIcon = 'bi-info-circle-fill' %}
+                                        {% set severityLabel = 'Faible' %}
+                                    {% endif %}
+
+                                    <div class="list-group-item px-0 py-3">
+
+                                        <div class="d-flex gap-3">
+
+                                            <div class="text-{{ alertClass }}">
+                                                <i class="bi {{ alertIcon }} fs-4"></i>
+                                            </div>
+
+                                            <div class="flex-grow-1">
+
+                                                <div class="d-flex justify-content-between align-items-start gap-2">
+
+                                                    <h6 class="fw-bold mb-1">
+
+                                                        {% if alert.typeLabel is defined %}
+                                                            {{ alert.typeLabel }}
+                                                        {% else %}
+                                                            Alerte de maintenance
+                                                        {% endif %}
+
+                                                    </h6>
+
+                                                    <span class="badge text-bg-{{ alertClass }}">
+                                                        {{ severityLabel }}
+                                                    </span>
+
+                                                </div>
+
+                                                {% if alert.vehicle %}
+                                                    <div class="small text-muted mb-2">
+                                                        <i class="bi bi-car-front me-1"></i>
+                                                        {{ alert.vehicle.brand }}
+                                                        {{ alert.vehicle.model }}
+
+                                                        {% if alert.vehicle.registration %}
+                                                            — {{ alert.vehicle.registration }}
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+
+                                                {% if alert.message %}
+                                                    <p class="small mb-1">
+                                                        {{ alert.message }}
+                                                    </p>
+                                                {% endif %}
+
+                                                {% if alert.description %}
+                                                    <p class="small text-muted mb-1">
+                                                        {{ alert.description }}
+                                                    </p>
+                                                {% endif %}
+
+                                                {% if alert.triggeredAt %}
+                                                    <div class="small text-muted">
+                                                        <i class="bi bi-clock-history me-1"></i>
+                                                        {{ alert.triggeredAt|date('d/m/Y H:i') }}
+                                                    </div>
+                                                {% endif %}
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% else %}
+
+                            <div class="text-center py-5">
+
+                                <div class="mb-3">
+                                    <i class="bi bi-shield-check display-4 text-success"></i>
+                                </div>
+
+                                <h6 class="fw-bold">
+                                    Tout va bien !
+                                </h6>
+
+                                <p class="text-muted small mb-0">
+                                    Aucune alerte de maintenance pour vos véhicules.
+                                </p>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

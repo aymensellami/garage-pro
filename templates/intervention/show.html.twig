@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ intervention.reference }} — GaragePro{% endblock %}
+{% block body %}
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="gp-card p-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h4 class="text-white font-monospace">{{ intervention.reference }}</h4>
+                    <div class="text-muted">{{ intervention.vehicle.brand }} {{ intervention.vehicle.model }} · {{ intervention.vehicle.registration }}</div>
+                </div>
+                <span class="badge {{ intervention.status == 'completed' ? 'bg-success' : (intervention.status == 'in_progress' ? 'bg-primary' : 'bg-secondary') }} fs-6">
+                    {{ intervention.status }}
+                </span>
+            </div>
+            <p class="text-light">{{ intervention.description }}</p>
+            <div class="row g-3 mt-2">
+                <div class="col-md-4"><div class="text-muted small">Mécanicien</div><div class="text-white">{{ intervention.mechanic ? intervention.mechanic.fullName : 'Non assigné' }}</div></div>
+                <div class="col-md-4"><div class="text-muted small">Date prévue</div><div class="text-white">{{ intervention.scheduledAt|date('d/m/Y H:i') }}</div></div>
+                <div class="col-md-4"><div class="text-muted small">Coût estimé</div><div class="text-white">{{ intervention.estimatedCost }} € HT</div></div>
+            </div>
+            {% if intervention.notes %}
+                <div class="mt-3 p-3 rounded" style="background:#0f172a;"><div class="text-muted small">Notes internes</div><div class="text-light">{{ intervention.notes }}</div></div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="gp-card p-4">
+            <h5 class="text-white mb-3">Actions</h5>
+            {% if intervention.status == 'pending' %}
+                <form method="post" action="{{ path('app_intervention_start', {id: intervention.id}) }}">
+                    <button class="btn btn-primary w-100 mb-2"><i class="bi bi-play-fill me-1"></i>Démarrer</button>
+                </form>
+            {% endif %}
+            {% if intervention.status == 'in_progress' %}
+                <form method="post" action="{{ path('app_intervention_complete', {id: intervention.id}) }}">
+                    <button class="btn btn-success w-100 mb-2"><i class="bi bi-check-lg me-1"></i>Terminer & Facturer</button>
+                </form>
+            {% endif %}
+            {% if intervention.invoice %}
+                <a href="{{ path('app_invoice_show', {id: intervention.invoice.id}) }}" class="btn btn-outline-info w-100"><i class="bi bi-receipt me-1"></i>Voir la facture</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

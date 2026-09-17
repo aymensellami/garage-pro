@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="GaragePro - Plateforme de maintenance automobile">
+
+    <meta name="author"
+          content="GaragePro">
+
+    <title>
+        {% block title %}GaragePro{% endblock %}
+    </title>
+
+    {# =====================================================
+       BOOTSTRAP 5
+       ===================================================== #}
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    {# =====================================================
+       BOOTSTRAP ICONS
+       ===================================================== #}
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    {# =====================================================
+       CSS GARAGEPRO
+       Tout est directement dans base.html.twig
+       ===================================================== #}
+
+    <style>
+
+        /* =====================================================
+           VARIABLES
+           ===================================================== */
+
+        :root {
+            --gp-primary: #0d6efd;
+            --gp-primary-dark: #0b5ed7;
+            --gp-sidebar: #172033;
+            --gp-sidebar-hover: #24324a;
+            --gp-bg: #f5f7fb;
+            --gp-card: #ffffff;
+            --gp-text: #1f2937;
+            --gp-muted: #6b7280;
+            --gp-border: #e5e7eb;
+            --gp-success: #198754;
+            --gp-warning: #ffc107;
+            --gp-danger: #dc3545;
+            --gp-info: #0dcaf0;
+            --gp-sidebar-width: 260px;
+            --gp-topbar-height: 70px;
+        }
+
+        /* =====================================================
+           GLOBAL
+           ===================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--gp-bg);
+            color: var(--gp-text);
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
+                sans-serif;
+            font-size: 15px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* =====================================================
+           SIDEBAR DESKTOP
+           ===================================================== */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--gp-sidebar-width);
+            height: 100vh;
+            background: var(--gp-sidebar);
+            color: #ffffff;
+            overflow-y: auto;
+            z-index: 1030;
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.08);
+            scrollbar-width: thin;
+            scrollbar-color: #475569 transparent;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 10px;
+        }
+
+        /* =====================================================
+           LOGO SIDEBAR
+           ===================================================== */
+
+        .sidebar-logo {
+            height: var(--gp-topbar-height);
+            display: flex;
+            align-items: center;
+            padding: 0 22px;
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.08);
+            font-size: 21px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .sidebar-logo i {
+            margin-right: 10px;
+            color: #4dabf7;
+            font-size: 25px;
+        }
+
+        /* =====================================================
+           NAVIGATION SIDEBAR
+           ===================================================== */
+
+        .sidebar .nav {
+            padding: 15px 10px;
+        }
+
+        .nav-title {
+            padding:
+                15px 12px 7px;
+            color: #8f9bb3;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 4px;
+            padding: 11px 13px;
+            border-radius: 8px;
+            color: #cbd5e1;
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .sidebar .nav-link:hover {
+            background: var(--gp-sidebar-hover);
+            color: #ffffff;
+            transform: translateX(2px);
+        }
+
+        .sidebar .nav-link.active {
+            background: var(--gp-primary);
+            color: #ffffff;
+            box-shadow:
+                0 4px 10px rgba(13, 110, 253, 0.25);
+        }
+
+        .sidebar .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        /* =====================================================
+           MAIN CONTENT
+           ===================================================== */
+
+        .main-content {
+            margin-left: var(--gp-sidebar-width);
+            min-height: 100vh;
+            background: var(--gp-bg);
+        }
+
+        /* =====================================================
+           TOPBAR
+           ===================================================== */
+
+        .topbar {
+            height: var(--gp-topbar-height);
+            background: #ffffff;
+            border-bottom:
+                1px solid var(--gp-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .topbar strong {
+            font-size: 16px;
+        }
+
+        /* =====================================================
+           PAGE CONTENT
+           ===================================================== */
+
+        .page-content {
+            padding: 25px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            margin: 5px 0 0;
+            color: var(--gp-muted);
+        }
+
+        /* =====================================================
+           CARDS
+           ===================================================== */
+
+        .card {
+            border:
+                1px solid var(--gp-border);
+            border-radius: 12px;
+            background: var(--gp-card);
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .card-header {
+            background: transparent;
+            border-bottom:
+                1px solid var(--gp-border);
+        }
+
+        .stat-card {
+            padding: 20px;
+            background: #ffffff;
+            border:
+                1px solid var(--gp-border);
+            border-radius: 12px;
+            height: 100%;
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-card .icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background:
+                rgba(13, 110, 253, 0.1);
+            color:
+                var(--gp-primary);
+            font-size: 22px;
+        }
+
+        .stat-card h3 {
+            margin:
+                15px 0 3px;
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        .stat-card p {
+            margin: 0;
+            color: var(--gp-muted);
+        }
+
+        /* =====================================================
+           TABLE
+           ===================================================== */
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: #f8fafc;
+            color: #4b5563;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom:
+                1px solid var(--gp-border);
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            transition:
+                background 0.15s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(13, 110, 253, 0.03);
+        }
+
+        /* =====================================================
+           BUTTONS
+           ===================================================== */
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border-radius: 8px;
+        }
+
+        /* =====================================================
+           FORMS
+           ===================================================== */
+
+        .form-label {
+            font-weight: 600;
+            color: var(--gp-text);
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 42px;
+            border-radius: 8px;
+            border:
+                1px solid var(--gp-border);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color:
+                var(--gp-primary);
+            box-shadow:
+                0 0 0 0.2rem
+                rgba(13, 110, 253, 0.12);
+        }
+
+        textarea.form-control {
+            min-height: 110px;
+        }
+
+        /* =====================================================
+           ALERTS
+           ===================================================== */
+
+        .alert {
+            border-radius: 10px;
+            margin:
+                15px 25px;
+        }
+
+        /* =====================================================
+           BADGES
+           ===================================================== */
+
+        .badge {
+            border-radius: 6px;
+            padding:
+                0.45em 0.7em;
+        }
+
+        /* =====================================================
+           USER AVATAR
+           ===================================================== */
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                var(--gp-primary);
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* =====================================================
+           MOBILE HEADER
+           ===================================================== */
+
+        .mobile-header {
+            display: none;
+            height: 60px;
+            background:
+                var(--gp-sidebar);
+            color: #ffffff;
+            align-items: center;
+            justify-content: space-between;
+            padding:
+                0 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+        }
+
+        .mobile-header strong {
+            font-size: 18px;
+        }
+
+        /* =====================================================
+           OFFCANVAS MOBILE
+           ===================================================== */
+
+        .offcanvas {
+            background:
+                var(--gp-sidebar);
+        }
+
+        .offcanvas .nav-link {
+            border-radius: 8px;
+            padding:
+                10px 12px;
+            transition: 0.2s;
+        }
+
+        .offcanvas .nav-link:hover {
+            background:
+                var(--gp-sidebar-hover);
+        }
+
+        .offcanvas .nav-link.active {
+            background:
+                var(--gp-primary);
+        }
+
+        /* =====================================================
+           DROPDOWN
+           ===================================================== */
+
+        .dropdown-menu {
+            border-radius: 10px;
+            border:
+                1px solid var(--gp-border);
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* =====================================================
+           LOGIN
+           ===================================================== */
+
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #f5f7fb,
+                    #e9eff8
+                );
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 430px;
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow:
+                0 15px 40px
+                rgba(0, 0, 0, 0.08);
+        }
+
+        /* =====================================================
+           RESPONSIVE TABLET
+           ===================================================== */
+
+        @media (max-width: 991px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .topbar {
+                height: 60px;
+                padding:
+                    0 18px;
+            }
+
+            .page-content {
+                padding: 18px;
+            }
+
+            .alert {
+                margin:
+                    12px 18px;
+            }
+        }
+
+        /* =====================================================
+           RESPONSIVE MOBILE
+           ===================================================== */
+
+        @media (max-width: 576px) {
+
+            .topbar {
+                padding:
+                    0 12px;
+            }
+
+            .page-content {
+                padding:
+                    14px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .page-header h1 {
+                font-size: 23px;
+            }
+
+            .alert {
+                margin:
+                    10px 14px;
+            }
+
+            .stat-card h3 {
+                font-size: 24px;
+            }
+        }
+
+        /* =====================================================
+           DARK MODE
+           ===================================================== */
+
+        [data-theme="dark"] {
+            --gp-bg: #0f172a;
+            --gp-card: #1e293b;
+            --gp-text: #e5e7eb;
+            --gp-muted: #94a3b8;
+            --gp-border: #334155;
+        }
+
+        [data-theme="dark"] body {
+            background:
+                var(--gp-bg);
+            color:
+                var(--gp-text);
+        }
+
+        [data-theme="dark"] .main-content {
+            background:
+                var(--gp-bg);
+        }
+
+        [data-theme="dark"] .topbar {
+            background:
+                #1e293b;
+            border-color:
+                var(--gp-border);
+            color:
+                var(--gp-text);
+        }
+
+        [data-theme="dark"] .card,
+        [data-theme="dark"] .stat-card {
+            background:
+                var(--gp-card);
+            color:
+                var(--gp-text);
+            border-color:
+                var(--gp-border);
+        }
+
+        [data-theme="dark"] .table {
+            color:
+                var(--gp-text);
+        }
+
+        [data-theme="dark"] .table thead th {
+            background:
+                #273449;
+            color:
+                #cbd5e1;
+            border-color:
+                var(--gp-border);
+        }
+
+        [data-theme="dark"] .table tbody tr:hover {
+            background:
+                rgba(255,255,255,0.03);
+        }
+
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select {
+            background:
+                #1e293b;
+            color:
+                #ffffff;
+            border-color:
+                #475569;
+        }
+
+        [data-theme="dark"] .form-control::placeholder {
+            color:
+                #94a3b8;
+        }
+
+        [data-theme="dark"] .form-label {
+            color:
+                #e5e7eb;
+        }
+
+        [data-theme="dark"] .text-muted {
+            color:
+                #94a3b8 !important;
+        }
+
+        [data-theme="dark"] .btn-light {
+            background:
+                #334155;
+            color:
+                #ffffff;
+            border-color:
+                #475569;
+        }
+
+        [data-theme="dark"] .dropdown-menu {
+            background:
+                #1e293b;
+            border-color:
+                #334155;
+        }
+
+        [data-theme="dark"] .dropdown-item {
+            color:
+                #e5e7eb;
+        }
+
+        [data-theme="dark"] .dropdown-item:hover {
+            background:
+                #334155;
+            color:
+                #ffffff;
+        }
+
+        /* =====================================================
+           SCROLLBAR
+           ===================================================== */
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background:
+                #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background:
+                #94a3b8;
+            border-radius:
+                10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background:
+                #64748b;
+        }
+
+    </style>
+
+    {% block stylesheets %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+{# =========================================================
+   MOBILE HEADER
+   ========================================================= #}
+
+<header class="mobile-header">
+
+    <div class="d-flex align-items-center gap-2">
+
+        <button
+            class="btn btn-outline-light"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#mobileSidebar"
+            aria-controls="mobileSidebar"
+        >
+            <i class="bi bi-list fs-4"></i>
+        </button>
+
+        <strong>
+            <i class="bi bi-car-front-fill me-1"></i>
+            GaragePro
+        </strong>
+
+    </div>
+
+    <div>
+
+        {% if app.user %}
+
+            <span class="user-avatar">
+                {{ app.user.firstName|default('U')|slice(0, 1)|upper }}
+            </span>
+
+        {% endif %}
+
+    </div>
+
+</header>
+
+
+{# =========================================================
+   DESKTOP SIDEBAR
+   ========================================================= #}
+
+<aside class="sidebar">
+
+    {# LOGO #}
+
+    <div class="sidebar-logo">
+
+        <i class="bi bi-car-front-fill"></i>
+
+        <span>
+            GaragePro
+        </span>
+
+    </div>
+
+
+    {# USER INFORMATION #}
+
+    {% if app.user %}
+
+        <div class="px-3 py-3 border-bottom border-secondary border-opacity-25">
+
+            <div class="d-flex align-items-center gap-2">
+
+                <div class="user-avatar">
+
+                    {{ app.user.firstName|default('U')|slice(0, 1)|upper }}
+
+                </div>
+
+                <div class="overflow-hidden">
+
+                    <div class="fw-semibold text-white text-truncate">
+
+                        {{ app.user.firstName|default('Utilisateur') }}
+
+                        {{ app.user.lastName|default('') }}
+
+                    </div>
+
+                    <small class="text-secondary text-truncate d-block">
+
+                        {{ app.user.email }}
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+    {# =====================================================
+       NAVIGATION
+       ===================================================== #}
+
+    <nav class="nav flex-column">
+
+
+        {# =================================================
+           ADMINISTRATEUR
+           ================================================= #}
+
+        {% if is_granted('ROLE_ADMIN') %}
+
+            <div class="nav-title">
+                Administration
+            </div>
+
+
+            <a
+                href="{{ path('app_admin_dashboard') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') == 'app_admin_dashboard' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-speedometer2"></i>
+
+                <span>
+                    Tableau de bord
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_admin_users') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_admin_user' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-people"></i>
+
+                <span>
+                    Utilisateurs
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_customer_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_customer_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-person-vcard"></i>
+
+                <span>
+                    Clients
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_vehicle_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_vehicle_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-car-front"></i>
+
+                <span>
+                    Véhicules
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_intervention_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_intervention_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-tools"></i>
+
+                <span>
+                    Interventions
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_part_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_part_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-box-seam"></i>
+
+                <span>
+                    Stock
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_invoice_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_invoice_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-receipt"></i>
+
+                <span>
+                    Factures
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_appointment_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_appointment_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-calendar-check"></i>
+
+                <span>
+                    Rendez-vous
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_alert_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_alert_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-bell"></i>
+
+                <span>
+                    Alertes
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_supplier_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_supplier_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-truck"></i>
+
+                <span>
+                    Fournisseurs
+                </span>
+            </a>
+
+
+            {# GESTION #}
+
+            <div class="nav-title mt-3">
+                Gestion
+            </div>
+
+
+            <a
+                href="{{ path('app_admin_stats') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') == 'app_admin_stats' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-bar-chart"></i>
+
+                <span>
+                    Statistiques
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_admin_settings') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') == 'app_admin_settings' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-gear"></i>
+
+                <span>
+                    Paramètres
+                </span>
+            </a>
+
+        {% endif %}
+
+
+        {# =====================================================
+           MECANICIEN
+           ===================================================== #}
+
+        {% if is_granted('ROLE_MECHANIC')
+            and not is_granted('ROLE_ADMIN') %}
+
+            <div class="nav-title">
+                Atelier
+            </div>
+
+
+            <a
+                href="{{ path('app_mechanic_dashboard') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') == 'app_mechanic_dashboard' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-speedometer2"></i>
+
+                <span>
+                    Tableau de bord
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_intervention_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_intervention_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-tools"></i>
+
+                <span>
+                    Interventions
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_vehicle_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_vehicle_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-car-front"></i>
+
+                <span>
+                    Véhicules
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_part_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_part_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-box-seam"></i>
+
+                <span>
+                    Stock
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_appointment_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_appointment_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-calendar-check"></i>
+
+                <span>
+                    Rendez-vous
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_alert_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_alert_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-bell"></i>
+
+                <span>
+                    Alertes
+                </span>
+            </a>
+
+        {% endif %}
+
+
+        {# =====================================================
+           UTILISATEUR
+           ===================================================== #}
+
+        {% if is_granted('ROLE_USER')
+            and not is_granted('ROLE_MECHANIC')
+            and not is_granted('ROLE_ADMIN') %}
+
+            <div class="nav-title">
+                Mon espace
+            </div>
+
+
+            <a
+                href="{{ path('app_dashboard') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') == 'app_dashboard' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-speedometer2"></i>
+
+                <span>
+                    Tableau de bord
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_vehicle_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_vehicle_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-car-front"></i>
+
+                <span>
+                    Mes véhicules
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_appointment_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_appointment_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-calendar-check"></i>
+
+                <span>
+                    Rendez-vous
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_invoice_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_invoice_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-receipt"></i>
+
+                <span>
+                    Mes factures
+                </span>
+            </a>
+
+
+            <a
+                href="{{ path('app_alert_index') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') starts with 'app_alert_' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-bell"></i>
+
+                <span>
+                    Mes alertes
+                </span>
+            </a>
+
+        {% endif %}
+
+
+        {# =====================================================
+           MON PROFIL
+           Accessible à tous les utilisateurs connectés
+           ===================================================== #}
+
+        {% if app.user %}
+
+            <div class="my-3 mx-3 border-top border-secondary border-opacity-25"></div>
+
+            <a
+                href="{{ path('app_profile') }}"
+                class="nav-link
+                {% if app.request.attributes.get('_route') == 'app_profile' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-person-circle"></i>
+
+                <span>
+                    Mon profil
+                </span>
+            </a>
+
+        {% endif %}
+
+
+        {# =====================================================
+           THEME
+           ===================================================== #}
+
+        <button
+            type="button"
+            id="themeToggle"
+            class="nav-link border-0 bg-transparent w-100 text-start"
+        >
+            <i
+                class="bi bi-moon-stars"
+                id="themeIcon"
+            ></i>
+
+            <span id="themeText">
+                Mode sombre
+            </span>
+        </button>
+
+
+        {# =====================================================
+           DECONNEXION
+           ===================================================== #}
+
+        {% if app.user %}
+
+            <a
+                href="{{ path('app_logout') }}"
+                class="nav-link text-danger"
+            >
+                <i class="bi bi-box-arrow-right"></i>
+
+                <span>
+                    Déconnexion
+                </span>
+            </a>
+
+        {% endif %}
+
+    </nav>
+
+</aside>
+
+
+{# =========================================================
+   MOBILE SIDEBAR
+   ========================================================= #}
+
+<div
+    class="offcanvas offcanvas-start text-bg-dark"
+    tabindex="-1"
+    id="mobileSidebar"
+    aria-labelledby="mobileSidebarLabel"
+>
+
+    <div class="offcanvas-header">
+
+        <h5
+            class="offcanvas-title"
+            id="mobileSidebarLabel"
+        >
+            <i class="bi bi-car-front-fill me-2"></i>
+            GaragePro
+        </h5>
+
+
+        <button
+            type="button"
+            class="btn-close btn-close-white"
+            data-bs-dismiss="offcanvas"
+            aria-label="Fermer"
+        ></button>
+
+    </div>
+
+
+    <div class="offcanvas-body">
+
+        {% if app.user %}
+
+            <div class="d-flex align-items-center gap-2 mb-4">
+
+                <div class="user-avatar">
+
+                    {{ app.user.firstName|default('U')|slice(0, 1)|upper }}
+
+                </div>
+
+                <div>
+
+                    <strong>
+
+                        {{ app.user.firstName|default('Utilisateur') }}
+
+                        {{ app.user.lastName|default('') }}
+
+                    </strong>
+
+                    <small class="d-block text-secondary">
+
+                        {{ app.user.email }}
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+        {# ADMIN MOBILE #}
+
+        {% if is_granted('ROLE_ADMIN') %}
+
+            <div class="text-uppercase text-secondary small fw-bold mb-2">
+                Administration
+            </div>
+
+
+            <div class="nav flex-column gap-1">
+
+                <a
+                    href="{{ path('app_admin_dashboard') }}"
+                    class="nav-link text-white
+                    {% if app.request.attributes.get('_route') == 'app_admin_dashboard' %}
+                        active
+                    {% endif %}"
+                >
+                    <i class="bi bi-speedometer2 me-2"></i>
+                    Tableau de bord
+                </a>
+
+
+                <a
+                    href="{{ path('app_admin_users') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-people me-2"></i>
+                    Utilisateurs
+                </a>
+
+
+                <a
+                    href="{{ path('app_customer_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-person-vcard me-2"></i>
+                    Clients
+                </a>
+
+
+                <a
+                    href="{{ path('app_vehicle_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-car-front me-2"></i>
+                    Véhicules
+                </a>
+
+
+                <a
+                    href="{{ path('app_intervention_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-tools me-2"></i>
+                    Interventions
+                </a>
+
+
+                <a
+                    href="{{ path('app_part_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-box-seam me-2"></i>
+                    Stock
+                </a>
+
+
+                <a
+                    href="{{ path('app_invoice_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-receipt me-2"></i>
+                    Factures
+                </a>
+
+
+                <a
+                    href="{{ path('app_appointment_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-calendar-check me-2"></i>
+                    Rendez-vous
+                </a>
+
+
+                <a
+                    href="{{ path('app_alert_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-bell me-2"></i>
+                    Alertes
+                </a>
+
+
+                <a
+                    href="{{ path('app_supplier_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-truck me-2"></i>
+                    Fournisseurs
+                </a>
+
+            </div>
+
+
+            <div class="text-uppercase text-secondary small fw-bold mt-4 mb-2">
+                Gestion
+            </div>
+
+
+            <div class="nav flex-column gap-1">
+
+                <a
+                    href="{{ path('app_admin_stats') }}"
+                    class="nav-link text-white
+                    {% if app.request.attributes.get('_route') == 'app_admin_stats' %}
+                        active
+                    {% endif %}"
+                >
+                    <i class="bi bi-bar-chart me-2"></i>
+                    Statistiques
+                </a>
+
+
+                <a
+                    href="{{ path('app_admin_settings') }}"
+                    class="nav-link text-white
+                    {% if app.request.attributes.get('_route') == 'app_admin_settings' %}
+                        active
+                    {% endif %}"
+                >
+                    <i class="bi bi-gear me-2"></i>
+                    Paramètres
+                </a>
+
+            </div>
+
+        {% endif %}
+
+
+        {# MECANICIEN MOBILE #}
+
+        {% if is_granted('ROLE_MECHANIC')
+            and not is_granted('ROLE_ADMIN') %}
+
+            <div class="text-uppercase text-secondary small fw-bold mb-2">
+                Atelier
+            </div>
+
+
+            <div class="nav flex-column gap-1">
+
+                <a
+                    href="{{ path('app_mechanic_dashboard') }}"
+                    class="nav-link text-white
+                    {% if app.request.attributes.get('_route') == 'app_mechanic_dashboard' %}
+                        active
+                    {% endif %}"
+                >
+                    <i class="bi bi-speedometer2 me-2"></i>
+                    Tableau de bord
+                </a>
+
+
+                <a
+                    href="{{ path('app_intervention_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-tools me-2"></i>
+                    Interventions
+                </a>
+
+
+                <a
+                    href="{{ path('app_vehicle_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-car-front me-2"></i>
+                    Véhicules
+                </a>
+
+
+                <a
+                    href="{{ path('app_part_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-box-seam me-2"></i>
+                    Stock
+                </a>
+
+
+                <a
+                    href="{{ path('app_appointment_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-calendar-check me-2"></i>
+                    Rendez-vous
+                </a>
+
+
+                <a
+                    href="{{ path('app_alert_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-bell me-2"></i>
+                    Alertes
+                </a>
+
+            </div>
+
+        {% endif %}
+
+
+        {# UTILISATEUR MOBILE #}
+
+        {% if is_granted('ROLE_USER')
+            and not is_granted('ROLE_MECHANIC')
+            and not is_granted('ROLE_ADMIN') %}
+
+            <div class="text-uppercase text-secondary small fw-bold mb-2">
+                Mon espace
+            </div>
+
+
+            <div class="nav flex-column gap-1">
+
+                <a
+                    href="{{ path('app_dashboard') }}"
+                    class="nav-link text-white
+                    {% if app.request.attributes.get('_route') == 'app_dashboard' %}
+                        active
+                    {% endif %}"
+                >
+                    <i class="bi bi-speedometer2 me-2"></i>
+                    Tableau de bord
+                </a>
+
+
+                <a
+                    href="{{ path('app_vehicle_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-car-front me-2"></i>
+                    Mes véhicules
+                </a>
+
+
+                <a
+                    href="{{ path('app_appointment_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-calendar-check me-2"></i>
+                    Rendez-vous
+                </a>
+
+
+                <a
+                    href="{{ path('app_invoice_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-receipt me-2"></i>
+                    Mes factures
+                </a>
+
+
+                <a
+                    href="{{ path('app_alert_index') }}"
+                    class="nav-link text-white"
+                >
+                    <i class="bi bi-bell me-2"></i>
+                    Mes alertes
+                </a>
+
+            </div>
+
+        {% endif %}
+
+
+        {# =====================================================
+           MON PROFIL MOBILE
+           Accessible à tous les utilisateurs connectés
+           ===================================================== #}
+
+        {% if app.user %}
+
+            <hr class="border-secondary mt-4">
+
+            <a
+                href="{{ path('app_profile') }}"
+                class="nav-link text-white mb-2
+                {% if app.request.attributes.get('_route') == 'app_profile' %}
+                    active
+                {% endif %}"
+            >
+                <i class="bi bi-person-circle me-2"></i>
+                Mon profil
+            </a>
+
+
+            {# DECONNEXION MOBILE #}
+
+            <a
+                href="{{ path('app_logout') }}"
+                class="btn btn-danger w-100 mt-2"
+            >
+                <i class="bi bi-box-arrow-right me-2"></i>
+                Déconnexion
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+{# =========================================================
+   MAIN CONTENT
+   ========================================================= #}
+
+<main class="main-content">
+
+
+    {# TOPBAR #}
+
+    <div class="topbar">
+
+        <div>
+
+            <div class="text-muted small">
+                Plateforme de maintenance automobile
+            </div>
+
+
+            <strong>
+
+                {% block page_title %}
+                    GaragePro
+                {% endblock %}
+
+            </strong>
+
+        </div>
+
+
+        <div class="d-flex align-items-center gap-3">
+
+
+            {# THEME #}
+
+            <button
+                type="button"
+                id="desktopThemeToggle"
+                class="btn btn-light btn-icon"
+                title="Changer le thème"
+            >
+
+                <i
+                    class="bi bi-moon-stars"
+                    id="desktopThemeIcon"
+                ></i>
+
+            </button>
+
+
+            {# USER #}
+
+            {% if app.user %}
+
+                <div class="d-flex align-items-center gap-2">
+
+                    <div class="user-avatar">
+
+                        {{ app.user.firstName|default('U')|slice(0, 1)|upper }}
+
+                    </div>
+
+
+                    <div class="d-none d-md-block">
+
+                        <div class="fw-semibold">
+
+                            {{ app.user.firstName|default('Utilisateur') }}
+
+                            {{ app.user.lastName|default('') }}
+
+                        </div>
+
+
+                        <small class="text-muted">
+
+                            {% if is_granted('ROLE_ADMIN') %}
+
+                                Administrateur
+
+                            {% elseif is_granted('ROLE_MECHANIC') %}
+
+                                Mécanicien
+
+                            {% else %}
+
+                                Utilisateur
+
+                            {% endif %}
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    {# =====================================================
+       FLASH MESSAGES
+       ===================================================== #}
+
+    {% for label, messages in app.flashes %}
+
+        {% for message in messages %}
+
+            <div
+                class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show"
+                role="alert"
+            >
+
+                {% if label == 'success' %}
+
+                    <i class="bi bi-check-circle me-2"></i>
+
+                {% elseif label == 'error' or label == 'danger' %}
+
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+
+                {% elseif label == 'warning' %}
+
+                    <i class="bi bi-exclamation-circle me-2"></i>
+
+                {% else %}
+
+                    <i class="bi bi-info-circle me-2"></i>
+
+                {% endif %}
+
+
+                {{ message }}
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Fermer"
+                ></button>
+
+            </div>
+
+        {% endfor %}
+
+    {% endfor %}
+
+
+    {# =====================================================
+       PAGE CONTENT
+       ===================================================== #}
+
+    <div class="page-content">
+
+        {% block body %}
+        {% endblock %}
+
+    </div>
+
+</main>
+
+
+{# =========================================================
+   BOOTSTRAP JAVASCRIPT
+   ========================================================= #}
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+{# =========================================================
+   THEME JAVASCRIPT
+   ========================================================= #}
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const html = document.documentElement;
+
+    const themeToggle =
+        document.getElementById('themeToggle');
+
+    const desktopThemeToggle =
+        document.getElementById('desktopThemeToggle');
+
+    const themeIcon =
+        document.getElementById('themeIcon');
+
+    const desktopThemeIcon =
+        document.getElementById('desktopThemeIcon');
+
+    const themeText =
+        document.getElementById('themeText');
+
+
+    /*
+     * Récupération du thème sauvegardé
+     */
+
+    const savedTheme =
+        localStorage.getItem('garagepro-theme') || 'light';
+
+
+    html.setAttribute(
+        'data-theme',
+        savedTheme
+    );
+
+
+    /*
+     * Mise à jour de l'interface
+     */
+
+    function updateThemeUI(theme) {
+
+        if (theme === 'dark') {
+
+            if (themeIcon) {
+
+                themeIcon.className =
+                    'bi bi-sun';
+
+            }
+
+            if (desktopThemeIcon) {
+
+                desktopThemeIcon.className =
+                    'bi bi-sun';
+
+            }
+
+            if (themeText) {
+
+                themeText.textContent =
+                    'Mode clair';
+
+            }
+
+        } else {
+
+            if (themeIcon) {
+
+                themeIcon.className =
+                    'bi bi-moon-stars';
+
+            }
+
+            if (desktopThemeIcon) {
+
+                desktopThemeIcon.className =
+                    'bi bi-moon-stars';
+
+            }
+
+            if (themeText) {
+
+                themeText.textContent =
+                    'Mode sombre';
+
+            }
+
+        }
+
+    }
+
+
+    /*
+     * Changer le thème
+     */
+
+    function toggleTheme() {
+
+        const currentTheme =
+            html.getAttribute('data-theme');
+
+
+        const newTheme =
+            currentTheme === 'dark'
+                ? 'light'
+                : 'dark';
+
+
+        html.setAttribute(
+            'data-theme',
+            newTheme
+        );
+
+
+        localStorage.setItem(
+            'garagepro-theme',
+            newTheme
+        );
+
+
+        updateThemeUI(newTheme);
+
+    }
+
+
+    /*
+     * Bouton thème sidebar
+     */
+
+    if (themeToggle) {
+
+        themeToggle.addEventListener(
+            'click',
+            toggleTheme
+        );
+
+    }
+
+
+    /*
+     * Bouton thème topbar
+     */
+
+    if (desktopThemeToggle) {
+
+        desktopThemeToggle.addEventListener(
+            'click',
+            toggleTheme
+        );
+
+    }
+
+
+    /*
+     * Initialisation
+     */
+
+    updateThemeUI(savedTheme);
+
+});
+
+</script>
+
+
+{% block javascripts %}
+{% endblock %}
+
+</body>
+</html>

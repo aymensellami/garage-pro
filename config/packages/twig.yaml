@@ -1,0 +1,9 @@
+twig:
+    default_path: '%kernel.project_dir%/templates'
+
+    globals:
+        app_name: 'GaragePro'
+        app_version: '1.0.0'
+
+    form_themes:
+        - 'bootstrap_5_layout.html.twig'

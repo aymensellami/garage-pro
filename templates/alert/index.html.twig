@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% block title %}Alertes — GaragePro{% endblock %}
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white">⚠️ Alertes maintenance</h2>
+</div>
+<div class="gp-card p-0 overflow-hidden">
+    <table class="table table-dark-custom mb-0">
+        <thead><tr><th>Type</th><th>Sévérité</th><th>Message</th><th>Véhicule</th><th>Date</th><th></th></tr></thead>
+        <tbody>
+        {% for alert in alerts %}
+            <tr>
+                <td>{{ alert.typeLabel }}</td>
+                <td><span class="badge" style="background:{{ alert.severityColor }}">{{ alert.severity }}</span></td>
+                <td>{{ alert.message }}</td>
+                <td>{{ alert.vehicle.brand }} {{ alert.vehicle.model }}</td>
+                <td>{{ alert.triggeredAt|date('d/m/Y') }}</td>
+                <td>
+                    <form method="post" action="{{ path('app_alert_resolve', {id: alert.id}) }}" class="d-inline">
+                        <button class="btn btn-sm btn-outline-success">Résoudre</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

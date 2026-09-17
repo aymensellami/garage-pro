@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ vehicle.brand }} {{ vehicle.model }} — GaragePro{% endblock %}
+{% block body %}
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="gp-card p-4">
+            <h4 class="text-white">{{ vehicle.brand }} {{ vehicle.model }}</h4>
+            <div class="text-muted mb-3">{{ vehicle.registration }} · {{ vehicle.year }}</div>
+            <ul class="list-unstyled text-light">
+                <li><i class="bi bi-speedometer2 me-2"></i>{{ vehicle.mileage|number_format(0, ' ', ' ') }} km</li>
+                <li><i class="bi bi-fuel-pump me-2"></i>{{ vehicle.fuelType|capitalize }}</li>
+                <li><i class="bi bi-palette me-2"></i>{{ vehicle.color ?: 'Non renseigné' }}</li>
+                <li><i class="bi bi-person me-2"></i>{{ vehicle.owner.fullName }}</li>
+            </ul>
+            <a href="{{ path('app_vehicle_edit', {id: vehicle.id}) }}" class="btn btn-outline-primary btn-sm">Modifier</a>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="gp-card p-4">
+            <h5 class="text-white mb-3">📋 Historique des interventions</h5>
+            {% for i in history %}
+                <div class="d-flex justify-content-between border-bottom border-secondary pb-2 mb-2">
+                    <div>
+                        <strong class="text-white">{{ i.reference }}</strong>
+                        <div class="small text-muted">{{ i.description|u.truncate(60, '...') }}</div>
+                    </div>
+                    <span class="badge {{ i.status == 'completed' ? 'bg-success' : (i.status == 'in_progress' ? 'bg-primary' : 'bg-secondary') }}">
+                        {{ i.status }}
+                    </span>
+                </div>
+            {% else %}
+                <p class="text-muted">Aucune intervention enregistrée.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

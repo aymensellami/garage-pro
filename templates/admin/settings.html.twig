@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+{% block title %}Paramètres — GaragePro{% endblock %}
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white"><i class="bi bi-gear me-2"></i>Paramètres système</h2>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="gp-card p-4">
+            <h5 class="text-white mb-3"><i class="bi bi-building me-2"></i>Informations garage</h5>
+            <div class="mb-3">
+                <label class="form-label text-light">Nom du garage</label>
+                <input type="text" class="form-control" value="GaragePro">
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-light">Adresse</label>
+                <textarea class="form-control" rows="2">123 Rue de l'Automobile, 75000 Paris</textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-light">Téléphone</label>
+                <input type="text" class="form-control" value="01 23 45 67 89">
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-light">Email de contact</label>
+                <input type="email" class="form-control" value="contact@garagepro.fr">
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-light">SIRET</label>
+                <input type="text" class="form-control" value="123 456 789 00012">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="gp-card p-4">
+            <h5 class="text-white mb-3"><i class="bi bi-sliders me-2"></i>Configuration</h5>
+            <div class="mb-3">
+                <label class="form-label text-light">TVA par défaut (%)</label>
+                <input type="number" class="form-control" value="20">
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-light">Délai de paiement (jours)</label>
+                <input type="number" class="form-control" value="30">
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-light">Seuil alerte stock</label>
+                <input type="number" class="form-control" value="5">
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-light">Intervalle vidange (km)</label>
+                <input type="number" class="form-control" value="15000">
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-light">Devise</label>
+                <select class="form-select">
+                    <option value="EUR" selected>Euro (€)</option>
+                    <option value="USD">Dollar ($)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-md-6">
+        <div class="gp-card p-4">
+            <h5 class="text-white mb-3"><i class="bi bi-envelope me-2"></i>Notifications</h5>
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" checked>
+                <label class="form-check-label text-light">Rappels de rendez-vous</label>
+            </div>
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" checked>
+                <label class="form-check-label text-light">Alertes stock faible</label>
+            </div>
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" checked>
+                <label class="form-check-label text-light">Alertes contrôle technique</label>
+            </div>
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox">
+                <label class="form-check-label text-light">Notifications par SMS</label>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="gp-card p-4">
+            <h5 class="text-white mb-3"><i class="bi bi-shield-lock me-2"></i>Sécurité</h5>
+            <div class="mb-3">
+                <label class="form-label text-light">Durée session (minutes)</label>
+                <input type="number" class="form-control" value="60">
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-light">Tentatives connexion max</label>
+                <input type="number" class="form-control" value="5">
+            </div>
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" checked>
+                <label class="form-check-label text-light">Double authentification (2FA)</label>
+            </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" checked>
+                <label class="form-check-label text-light">Journal d'audit activé</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 text-end">
+    <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Enregistrer les paramètres</button>
+</div>
+{% endblock %}

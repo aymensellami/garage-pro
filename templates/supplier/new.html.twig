@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+{% block title %}Nouveau fournisseur — GaragePro{% endblock %}
+{% block body %}
+<h2 class="text-white mb-4">🚚 Nouveau fournisseur</h2>
+<div class="gp-card p-4">
+    {{ form_start(form) }}
+    <div class="row g-3">
+        <div class="col-md-6">{{ form_row(form.name) }}</div>
+        <div class="col-md-6">{{ form_row(form.contactName) }}</div>
+        <div class="col-md-6">{{ form_row(form.email) }}</div>
+        <div class="col-md-6">{{ form_row(form.phone) }}</div>
+        <div class="col-md-8">{{ form_row(form.address) }}</div>
+        <div class="col-md-4">{{ form_row(form.siret) }}</div>
+        <div class="col-md-4">{{ form_row(form.paymentTerms) }}</div>
+    </div>
+    <button class="btn btn-primary mt-3">Enregistrer</button>
+    <a href="{{ path('app_supplier_index') }}" class="btn btn-outline-secondary mt-3">Annuler</a>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

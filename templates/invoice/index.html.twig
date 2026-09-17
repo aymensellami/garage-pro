@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% block title %}Factures — GaragePro{% endblock %}
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white">🧾 Factures</h2>
+</div>
+<div class="gp-card p-0 overflow-hidden">
+    <table class="table table-dark-custom mb-0">
+        <thead><tr><th>N°</th><th>Client</th><th>Montant TTC</th><th>Statut</th><th>Date</th><th></th></tr></thead>
+        <tbody>
+        {% for inv in invoices %}
+            <tr>
+                <td class="font-monospace">{{ inv.number }}</td>
+                <td>{{ inv.customer.fullName }}</td>
+                <td class="text-white fw-bold">{{ inv.totalTTC }} €</td>
+                <td>
+                    <span class="badge {{ inv.status == 'paid' ? 'bg-success' : (inv.status == 'overdue' ? 'bg-danger' : (inv.status == 'partially_paid' ? 'bg-warning' : 'bg-secondary')) }}">
+                        {{ inv.status }}
+                    </span>
+                </td>
+                <td>{{ inv.issuedAt|date('d/m/Y') }}</td>
+                <td><a href="{{ path('app_invoice_show', {id: inv.id}) }}" class="btn btn-sm btn-outline-primary">Voir</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

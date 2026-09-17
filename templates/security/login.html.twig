@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion — GaragePro{% endblock %}
+
+{% block body %}
+
+<div class="row justify-content-center align-items-center" style="min-height: 75vh;">
+
+<div class="col-12 col-sm-10 col-md-6 col-lg-4">
+
+    <div class="gp-card p-4 p-md-5">
+
+        <div class="text-center mb-4">
+
+            <div style="font-size: 50px;">
+                🔧
+            </div>
+
+            <h2 class="text-white fw-bold mt-2">
+                GaragePro
+            </h2>
+
+            <p class="text-muted">
+                Connectez-vous à votre espace
+            </p>
+
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+        {% endif %}
+
+        <form method="post" action="{{ path('app_login') }}">
+
+            <div class="mb-3">
+
+                <label for="inputEmail" class="form-label text-white">
+                    Adresse email
+                </label>
+
+                <input
+                    type="email"
+                    name="_username"
+                    id="inputEmail"
+                    class="form-control"
+                    value="{{ last_username|default('') }}"
+                    placeholder="admin@garagepro.tn"
+                    autocomplete="email"
+                    required
+                    autofocus
+                >
+
+            </div>
+
+            <div class="mb-4">
+
+                <label for="inputPassword" class="form-label text-white">
+                    Mot de passe
+                </label>
+
+                <input
+                    type="password"
+                    name="_password"
+                    id="inputPassword"
+                    class="form-control"
+                    placeholder="Votre mot de passe"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+            <input
+                type="hidden"
+                name="_csrf_token"
+                value="{{ csrf_token('authenticate') }}"
+            >
+
+            <button
+                type="submit"
+                class="btn btn-primary w-100"
+            >
+                🔐 Se connecter
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,115 @@
+
+services:
+  # === Application PHP ===
+  php:
+    build:
+      context: .
+      target: php_app
+    container_name: garagepro-php
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    volumes:
+      - ./:/var/www/html:cached
+      - garagepro_var:/var/www/html/var
+    networks:
+      - garagepro_network
+    depends_on:
+      database:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+
+  # === Serveur Web Nginx ===
+  nginx:
+    image: nginx:alpine
+    container_name: garagepro-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html:cached
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - garagepro_network
+    depends_on:
+      - php
+
+  # === Base de données MySQL ===
+  database:
+    image: mysql:8.0
+    container_name: garagepro-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_secret
+      MYSQL_DATABASE: garage_pro
+      MYSQL_USER: garage_user
+      MYSQL_PASSWORD: garage_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - garagepro_db:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - garagepro_network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "garage_user",
+          "-pgarage_pass"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # === Mailpit ===
+  mailpit:
+    image: axllent/mailpit
+    container_name: garagepro-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - garagepro_network
+
+  # === Redis ===
+  redis:
+    image: redis:7-alpine
+    container_name: garagepro-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - garagepro_network
+
+  # === phpMyAdmin ===
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: garagepro-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+      PMA_USER: garage_user
+      PMA_PASSWORD: garage_pass
+    ports:
+      - "8081:80"
+    networks:
+      - garagepro_network
+    depends_on:
+      - database
+
+volumes:
+  garagepro_db:
+  garagepro_var:
+
+networks:
+  garagepro_network:
+    driver: bridge

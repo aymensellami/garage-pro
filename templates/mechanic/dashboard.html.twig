@@ -1,0 +1,172 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord mécanicien{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">
+                <i class="bi bi-tools"></i>
+                Tableau de bord mécanicien
+            </h1>
+            <p class="text-muted mb-0">
+                Gestion des interventions et du stock
+            </p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="text-muted">
+                                Interventions aujourd'hui
+                            </h6>
+
+                            <h2 class="mb-0">
+                                {{ pendingInterventions|length }}
+                            </h2>
+                        </div>
+
+                        <i class="bi bi-wrench-adjustable-circle fs-1"></i>
+                    </div>
+
+                    <a href="{{ path('app_intervention_index') }}"
+                       class="btn btn-sm btn-primary mt-3">
+                        Voir les interventions
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Alertes
+                    </h6>
+
+                    <h2>
+                        {{ alerts|length }}
+                    </h2>
+
+                    <a href="{{ path('app_alert_index') }}"
+                       class="btn btn-sm btn-warning mt-3">
+                        Voir les alertes
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Pièces en stock faible
+                    </h6>
+
+                    <h2>
+                        {{ lowStockCount }}
+                    </h2>
+
+                    <a href="{{ path('app_part_index') }}"
+                       class="btn btn-sm btn-danger mt-3">
+                        Voir le stock
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-calendar-check"></i>
+                Interventions du jour
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            {% if pendingInterventions is empty %}
+
+                <div class="alert alert-info mb-0">
+                    Aucune intervention prévue aujourd'hui.
+                </div>
+
+            {% else %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover">
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Véhicule</th>
+                                <th>Statut</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                        {% for intervention in pendingInterventions %}
+
+                            <tr>
+
+                                <td>
+                                    #{{ intervention.id }}
+                                </td>
+
+                                <td>
+                                    {% if intervention.vehicle is defined and intervention.vehicle %}
+                                     {{ intervention.vehicle.registration }}                                        
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {{ intervention.status }}
+                                </td>
+
+                                <td>
+                                    <a href="{{ path(
+                                        'app_intervention_show',
+                                        {'id': intervention.id}
+                                    ) }}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Voir
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

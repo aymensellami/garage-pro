@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+{% block title %}Modifier {{ part.name }}{% endblock %}
+{% block body %}
+<h2 class="text-white mb-4">✏️ Modifier la pièce</h2>
+<div class="gp-card p-4">
+    {{ form_start(form) }}
+    <div class="row g-3">
+        <div class="col-md-6">{{ form_row(form.reference) }}</div>
+        <div class="col-md-6">{{ form_row(form.name) }}</div>
+        <div class="col-md-12">{{ form_row(form.description) }}</div>
+        <div class="col-md-4">{{ form_row(form.stockQuantity) }}</div>
+        <div class="col-md-4">{{ form_row(form.minStockAlert) }}</div>
+        <div class="col-md-4">{{ form_row(form.unitPrice) }}</div>
+        <div class="col-md-6">{{ form_row(form.supplier) }}</div>
+        <div class="col-md-6">{{ form_row(form.location) }}</div>
+    </div>
+    <button class="btn btn-primary mt-3">Enregistrer</button>
+    <a href="{{ path('app_part_index') }}" class="btn btn-outline-secondary mt-3">Annuler</a>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

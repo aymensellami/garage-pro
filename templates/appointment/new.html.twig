@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+{% block title %}Nouveau RDV — GaragePro{% endblock %}
+{% block body %}
+<h2 class="text-white mb-4">📅 Nouveau rendez-vous</h2>
+<div class="gp-card p-4">
+    {{ form_start(form) }}
+    <div class="row g-3">
+        <div class="col-md-6">{{ form_row(form.vehicle) }}</div>
+        <div class="col-md-3">{{ form_row(form.scheduledAt) }}</div>
+        <div class="col-md-3">{{ form_row(form.duration) }}</div>
+        <div class="col-md-6">{{ form_row(form.reason) }}</div>
+        <div class="col-md-6">{{ form_row(form.notes) }}</div>
+    </div>
+    <button class="btn btn-primary mt-3">Planifier</button>
+    <a href="{{ path('app_appointment_index') }}" class="btn btn-outline-secondary mt-3">Annuler</a>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

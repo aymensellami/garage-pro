@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+{% block title %}Stock — GaragePro{% endblock %}
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white">📦 Stock pièces détachées</h2>
+    <a href="{{ path('app_part_new') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Ajouter</a>
+</div>
+<div class="row g-4">
+    {% for part in parts %}
+        <div class="col-md-4">
+            <div class="gp-card p-3">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="small text-muted font-monospace">{{ part.reference }}</div>
+                    {% if part.stockStatus == 'out_of_stock' %}<span class="badge badge-danger">Rupture</span>
+                    {% elseif part.stockStatus == 'low_stock' %}<span class="badge badge-warning">Stock faible</span>
+                    {% else %}<span class="badge badge-ok">OK</span>{% endif %}
+                </div>
+                <h6 class="text-white">{{ part.name }}</h6>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="fs-4 fw-bold text-white">{{ part.stockQuantity }}</div>
+                    <div class="text-info fw-bold">{{ part.unitPrice }} €</div>
+                </div>
+                <div class="progress mt-2" style="height:4px;background:#334155;">
+                    <div class="progress-bar {{ part.stockStatus == 'out_of_stock' ? 'bg-danger' : (part.stockStatus == 'low_stock' ? 'bg-warning' : 'bg-success') }}" style="width:{{ min(100, (part.stockQuantity / (part.minStockAlert * 3)) * 100) }}%"></div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
