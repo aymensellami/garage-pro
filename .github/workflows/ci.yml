@@ -52,16 +52,18 @@ jobs:
       - name: Validate composer
         run: composer validate --strict
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-interaction
-
       - name: Configure test environment
         run: |
-          cat > .env.test.local <<'EOF'
+          cat > .env <<'EOF'
           APP_ENV=test
           APP_SECRET=garagepro-ci-secret
           DATABASE_URL="mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
           EOF
+
+      - name: Install dependencies
+        env:
+          APP_ENV: test
+        run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Check Symfony
         env:
@@ -115,7 +117,17 @@ jobs:
           coverage: none
           tools: composer
 
+      - name: Configure CI environment
+        run: |
+          cat > .env <<'EOF'
+          APP_ENV=test
+          APP_SECRET=garagepro-ci-secret
+          DATABASE_URL="mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+          EOF
+
       - name: Install dependencies
+        env:
+          APP_ENV: test
         run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: PHP syntax check
