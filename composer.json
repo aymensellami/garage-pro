@@ -1,4 +1,7 @@
 {
+    
+    "name": "aymensellami/garage-pro",
+    "description": "Garage management application",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
