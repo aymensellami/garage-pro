@@ -52,25 +52,31 @@ jobs:
 
       - name: Configure test environment
         run: |
-          cat > .env <<'EOF'
+          cat > .env.test <<'EOF'
           APP_ENV=test
           APP_SECRET=garagepro-ci-secret
           DATABASE_URL="mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
           EOF
+
+      - name: Verify test environment
+        env:
+          APP_ENV: test
+          APP_DEBUG: 1
+        run: |
+          php bin/console about --env=test
+          php bin/console debug:router app_admin_dashboard
+          php bin/console debug:router app_login
+          php bin/console lint:container --env=test
 
       - name: Install dependencies
         env:
           APP_ENV: test
         run: composer install --prefer-dist --no-progress --no-interaction
 
-      - name: Check Symfony
-        env:
-          APP_ENV: test
-        run: php bin/console about
-
       - name: Clear Symfony cache
         env:
           APP_ENV: test
+          APP_DEBUG: 1
         run: php bin/console cache:clear --env=test
 
       - name: Create test database
@@ -96,7 +102,10 @@ jobs:
         env:
           APP_ENV: test
           APP_DEBUG: 1
-        run: vendor/bin/phpunit --display-errors --display-phpunit-deprecations
+        run: |
+          vendor/bin/phpunit \
+            --display-errors \
+            --display-phpunit-deprecations
 
   code-quality:
     name: Qualite du code
@@ -117,7 +126,7 @@ jobs:
 
       - name: Configure CI environment
         run: |
-          cat > .env <<'EOF'
+          cat > .env.test <<'EOF'
           APP_ENV=test
           APP_SECRET=garagepro-ci-secret
           DATABASE_URL="mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
@@ -151,4 +160,4 @@ jobs:
       - name: Container Lint
         env:
           APP_ENV: test
-        run: php bin/console lint:container
+        run: php bin/console lint:container --env=test
