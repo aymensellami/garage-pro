@@ -71,22 +71,22 @@ jobs:
       - name: Clear Symfony cache
         env:
           APP_ENV: test
-        run: php bin/console cache:clear
+        run: php bin/console cache:clear --env=test
 
       - name: Create test database
         env:
           APP_ENV: test
-        run: php bin/console doctrine:database:create --if-not-exists
+        run: php bin/console doctrine:database:create --if-not-exists --env=test
 
       - name: Run migrations
         env:
           APP_ENV: test
-        run: php bin/console doctrine:migrations:migrate --no-interaction
+        run: php bin/console doctrine:migrations:migrate --no-interaction --env=test
 
       - name: Validate Doctrine mapping
         env:
           APP_ENV: test
-        run: php bin/console doctrine:schema:validate
+        run: php bin/console doctrine:schema:validate --env=test
 
       - name: PHP syntax check
         run: |
@@ -97,7 +97,6 @@ jobs:
           APP_ENV: test
           APP_DEBUG: 1
         run: vendor/bin/phpunit --display-errors --display-phpunit-deprecations
-
 
   code-quality:
     name: Qualite du code
