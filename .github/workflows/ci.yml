@@ -10,6 +10,9 @@ on:
 
 jobs:
 
+  # ============================================================
+  # JOB 1 : TESTS SYMFONY
+  # ============================================================
   test:
     name: Tests Symfony
     runs-on: ubuntu-latest
@@ -30,9 +33,15 @@ jobs:
 
     steps:
 
+      # ----------------------------------------------------------
+      # 1. Récupération du projet
+      # ----------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ----------------------------------------------------------
+      # 2. Installation de PHP 8.2
+      # ----------------------------------------------------------
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -41,15 +50,27 @@ jobs:
           coverage: none
           tools: composer
 
+      # ----------------------------------------------------------
+      # 3. Vérification PHP
+      # ----------------------------------------------------------
       - name: PHP version
         run: php -v
 
+      # ----------------------------------------------------------
+      # 4. Vérification Composer
+      # ----------------------------------------------------------
       - name: Composer version
         run: composer --version
 
+      # ----------------------------------------------------------
+      # 5. Validation composer.json
+      # ----------------------------------------------------------
       - name: Validate composer
         run: composer validate --strict
 
+      # ----------------------------------------------------------
+      # 6. Configuration environnement TEST
+      # ----------------------------------------------------------
       - name: Configure test environment
         run: |
           cat > .env.test <<'EOF'
@@ -58,6 +79,20 @@ jobs:
           DATABASE_URL="mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
           EOF
 
+      # ----------------------------------------------------------
+      # 7. Installation des dépendances
+      #
+      # IMPORTANT :
+      # composer install doit être AVANT bin/console
+      # ----------------------------------------------------------
+      - name: Install dependencies
+        env:
+          APP_ENV: test
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      # ----------------------------------------------------------
+      # 8. Vérification Symfony
+      # ----------------------------------------------------------
       - name: Verify test environment
         env:
           APP_ENV: test
@@ -68,36 +103,49 @@ jobs:
           php bin/console debug:router app_login
           php bin/console lint:container --env=test
 
-      - name: Install dependencies
-        env:
-          APP_ENV: test
-        run: composer install --prefer-dist --no-progress --no-interaction
-
+      # ----------------------------------------------------------
+      # 9. Nettoyage du cache Symfony
+      # ----------------------------------------------------------
       - name: Clear Symfony cache
         env:
           APP_ENV: test
           APP_DEBUG: 1
         run: php bin/console cache:clear --env=test
 
+      # ----------------------------------------------------------
+      # 10. Création de la base de données TEST
+      # ----------------------------------------------------------
       - name: Create test database
         env:
           APP_ENV: test
         run: php bin/console doctrine:database:create --if-not-exists --env=test
 
+      # ----------------------------------------------------------
+      # 11. Exécution des migrations
+      # ----------------------------------------------------------
       - name: Run migrations
         env:
           APP_ENV: test
         run: php bin/console doctrine:migrations:migrate --no-interaction --env=test
 
+      # ----------------------------------------------------------
+      # 12. Validation Doctrine
+      # ----------------------------------------------------------
       - name: Validate Doctrine mapping
         env:
           APP_ENV: test
         run: php bin/console doctrine:schema:validate --env=test
 
+      # ----------------------------------------------------------
+      # 13. Vérification syntaxe PHP
+      # ----------------------------------------------------------
       - name: PHP syntax check
         run: |
           find src tests -name "*.php" -print0 | xargs -0 -n1 php -l
 
+      # ----------------------------------------------------------
+      # 14. PHPUnit
+      # ----------------------------------------------------------
       - name: Run PHPUnit
         env:
           APP_ENV: test
@@ -107,15 +155,25 @@ jobs:
             --display-errors \
             --display-phpunit-deprecations
 
+
+  # ============================================================
+  # JOB 2 : QUALITE DU CODE
+  # ============================================================
   code-quality:
     name: Qualite du code
     runs-on: ubuntu-latest
 
     steps:
 
+      # ----------------------------------------------------------
+      # 1. Récupération du projet
+      # ----------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ----------------------------------------------------------
+      # 2. Installation PHP 8.2
+      # ----------------------------------------------------------
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -124,6 +182,9 @@ jobs:
           coverage: none
           tools: composer
 
+      # ----------------------------------------------------------
+      # 3. Configuration environnement CI
+      # ----------------------------------------------------------
       - name: Configure CI environment
         run: |
           cat > .env.test <<'EOF'
@@ -132,32 +193,63 @@ jobs:
           DATABASE_URL="mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
           EOF
 
+      # ----------------------------------------------------------
+      # 4. Installation Composer
+      # ----------------------------------------------------------
       - name: Install dependencies
         env:
           APP_ENV: test
         run: composer install --prefer-dist --no-progress --no-interaction
 
+      # ----------------------------------------------------------
+      # 5. Vérification syntaxe PHP
+      # ----------------------------------------------------------
       - name: PHP syntax check
         run: |
           find src tests -name "*.php" -print0 | xargs -0 -n1 php -l
 
+      # ----------------------------------------------------------
+      # 6. PHP CS Fixer
+      # ----------------------------------------------------------
       - name: PHP CS Fixer
-        run: vendor/bin/php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.dist.php
+        run: |
+          vendor/bin/php-cs-fixer fix \
+            --dry-run \
+            --diff \
+            --config=.php-cs-fixer.dist.php
 
+      # ----------------------------------------------------------
+      # 7. PHPStan
+      # ----------------------------------------------------------
       - name: PHPStan
-        run: vendor/bin/phpstan analyse src --level=6 --no-progress
+        run: |
+          vendor/bin/phpstan analyse src \
+            --level=6 \
+            --no-progress
 
+      # ----------------------------------------------------------
+      # 8. Twig Lint
+      # ----------------------------------------------------------
       - name: Twig Lint
         env:
           APP_ENV: test
-        run: php bin/console lint:twig templates
+        run: |
+          php bin/console lint:twig templates
 
+      # ----------------------------------------------------------
+      # 9. YAML Lint
+      # ----------------------------------------------------------
       - name: YAML Lint
         env:
           APP_ENV: test
-        run: php bin/console lint:yaml config
+        run: |
+          php bin/console lint:yaml config
 
+      # ----------------------------------------------------------
+      # 10. Symfony Container Lint
+      # ----------------------------------------------------------
       - name: Container Lint
         env:
           APP_ENV: test
-        run: php bin/console lint:container --env=test
+        run: |
+          php bin/console lint:container --env=test
