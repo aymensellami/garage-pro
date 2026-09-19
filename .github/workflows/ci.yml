@@ -156,6 +156,7 @@ jobs:
         env:
           APP_ENV: test
           APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
           DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
         run: |
           php bin/console doctrine:query:sql \
@@ -263,7 +264,7 @@ jobs:
             --filter SecurityControllerTest \
             --display-errors \
             --display-phpunit-deprecations \
-            --verbose
+            --debug
 
 
   # ============================================================
