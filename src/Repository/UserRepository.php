@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\User;
@@ -16,7 +19,7 @@ class UserRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('u')
             ->where('u.roles LIKE :role')
-            ->setParameter('role', '%"' . $role . '"%')
+            ->setParameter('role', '%"'.$role.'"%')
             ->getQuery()
             ->getResult();
     }

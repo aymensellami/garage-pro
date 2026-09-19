@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Intervention;
-use App\Entity\Vehicle;
 use PHPUnit\Framework\TestCase;
 
 class InterventionTest extends TestCase

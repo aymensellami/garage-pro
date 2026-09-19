@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\MaintenanceAlertRepository;
@@ -59,33 +62,103 @@ class MaintenanceAlert
         $this->triggeredAt = new \DateTime();
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function getVehicle(): ?Vehicle { return $this->vehicle; }
-    public function setVehicle(?Vehicle $vehicle): static { $this->vehicle = $vehicle; return $this; }
-    public function getType(): ?string { return $this->type; }
-    public function setType(string $type): static { $this->type = $type; return $this; }
-    public function getSeverity(): ?string { return $this->severity; }
-    public function setSeverity(string $severity): static { $this->severity = $severity; return $this; }
-    public function getMessage(): ?string { return $this->message; }
-    public function setMessage(string $message): static { $this->message = $message; return $this; }
-    public function getDescription(): ?string { return $this->description; }
-    public function setDescription(?string $description): static { $this->description = $description; return $this; }
-    public function getTriggeredAt(): ?\DateTimeInterface { return $this->triggeredAt; }
-    public function getResolvedAt(): ?\DateTimeInterface { return $this->resolvedAt; }
-    public function getResolvedBy(): ?User { return $this->resolvedBy; }
-    public function isResolved(): bool { return $this->isResolved; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getVehicle(): ?Vehicle
+    {
+        return $this->vehicle;
+    }
+
+    public function setVehicle(?Vehicle $vehicle): static
+    {
+        $this->vehicle = $vehicle;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getSeverity(): ?string
+    {
+        return $this->severity;
+    }
+
+    public function setSeverity(string $severity): static
+    {
+        $this->severity = $severity;
+
+        return $this;
+    }
+
+    public function getMessage(): ?string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(string $message): static
+    {
+        $this->message = $message;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getTriggeredAt(): ?\DateTimeInterface
+    {
+        return $this->triggeredAt;
+    }
+
+    public function getResolvedAt(): ?\DateTimeInterface
+    {
+        return $this->resolvedAt;
+    }
+
+    public function getResolvedBy(): ?User
+    {
+        return $this->resolvedBy;
+    }
+
+    public function isResolved(): bool
+    {
+        return $this->isResolved;
+    }
 
     public function resolve(User $user): static
     {
         $this->isResolved = true;
         $this->resolvedAt = new \DateTime();
         $this->resolvedBy = $user;
+
         return $this;
     }
 
     public function getTypeLabel(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             self::TYPE_TECHNICAL_CONTROL => 'Contrôle technique',
             self::TYPE_OIL_CHANGE => 'Vidange',
             self::TYPE_TIMING_BELT => 'Courroie de distribution',
@@ -98,7 +171,7 @@ class MaintenanceAlert
 
     public function getSeverityColor(): string
     {
-        return match($this->severity) {
+        return match ($this->severity) {
             self::SEVERITY_INFO => '#3b82f6',
             self::SEVERITY_WARNING => '#f59e0b',
             self::SEVERITY_DANGER => '#ef4444',
@@ -109,6 +182,6 @@ class MaintenanceAlert
 
     public function isUrgent(): bool
     {
-        return in_array($this->severity, [self::SEVERITY_DANGER, self::SEVERITY_CRITICAL]);
+        return \in_array($this->severity, [self::SEVERITY_DANGER, self::SEVERITY_CRITICAL]);
     }
 }

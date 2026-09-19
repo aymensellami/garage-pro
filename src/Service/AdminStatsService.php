@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Repository\CustomerRepository;
@@ -36,7 +38,7 @@ class AdminStatsService
             'totalInvoices' => $this->invoiceRepo->count([]),
             'totalParts' => $this->partRepo->count([]),
             'totalRevenue' => $this->invoiceRepo->getTotalRevenue(),
-            'activeMechanics' => count(
+            'activeMechanics' => \count(
                 $this->userRepo->findByRole('ROLE_MECHANIC')
             ),
         ];
@@ -47,7 +49,7 @@ class AdminStatsService
      */
     public function getRevenueByMonth(int $months = 12): array
     {
-        $months = max(1, (int) $months);
+        $months = \max(1, (int) $months);
 
         $conn = $this->em->getConnection();
 
@@ -72,7 +74,7 @@ class AdminStatsService
      */
     public function getInterventionsByMonth(int $months = 12): array
     {
-        $months = max(1, (int) $months);
+        $months = \max(1, (int) $months);
 
         $conn = $this->em->getConnection();
 
@@ -96,7 +98,7 @@ class AdminStatsService
      */
     public function getTopCustomers(int $limit = 10): array
     {
-        $limit = max(1, (int) $limit);
+        $limit = \max(1, (int) $limit);
 
         $conn = $this->em->getConnection();
 
@@ -120,7 +122,7 @@ class AdminStatsService
             ->executeQuery($sql)
             ->fetchAllAssociative();
 
-        return array_slice($results, 0, $limit);
+        return \array_slice($results, 0, $limit);
     }
 
     /**
@@ -128,7 +130,7 @@ class AdminStatsService
      */
     public function getTopMechanics(int $limit = 10): array
     {
-        $limit = max(1, (int) $limit);
+        $limit = \max(1, (int) $limit);
 
         $conn = $this->em->getConnection();
 
@@ -153,7 +155,7 @@ class AdminStatsService
             ->executeQuery($sql)
             ->fetchAllAssociative();
 
-        return array_slice($results, 0, $limit);
+        return \array_slice($results, 0, $limit);
     }
 
     /**
@@ -163,7 +165,7 @@ class AdminStatsService
     {
         $conn = $this->em->getConnection();
 
-        $sql = "
+        $sql = '
             SELECT
                 p.name,
                 p.stock_quantity,
@@ -173,7 +175,7 @@ class AdminStatsService
             WHERE p.is_active = 1
             ORDER BY value DESC
             LIMIT 20
-        ";
+        ';
 
         return $conn
             ->executeQuery($sql)
@@ -185,7 +187,7 @@ class AdminStatsService
      */
     public function getCustomerAcquisition(int $months = 12): array
     {
-        $months = max(1, (int) $months);
+        $months = \max(1, (int) $months);
 
         $conn = $this->em->getConnection();
 
@@ -211,12 +213,12 @@ class AdminStatsService
     {
         $conn = $this->em->getConnection();
 
-        $sql = "
+        $sql = '
             SELECT
                 SUM(stock_quantity * unit_price) AS value
             FROM part
             WHERE is_active = 1
-        ";
+        ';
 
         $result = $conn
             ->executeQuery($sql)

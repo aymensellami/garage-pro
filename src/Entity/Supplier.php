@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\SupplierRepository;
@@ -50,29 +53,119 @@ class Supplier
         $this->purchaseOrders = new ArrayCollection();
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function getName(): ?string { return $this->name; }
-    public function setName(string $name): static { $this->name = $name; return $this; }
-    public function getContactName(): ?string { return $this->contactName; }
-    public function setContactName(?string $contactName): static { $this->contactName = $contactName; return $this; }
-    public function getEmail(): ?string { return $this->email; }
-    public function setEmail(?string $email): static { $this->email = $email; return $this; }
-    public function getPhone(): ?string { return $this->phone; }
-    public function setPhone(?string $phone): static { $this->phone = $phone; return $this; }
-    public function getAddress(): ?string { return $this->address; }
-    public function setAddress(?string $address): static { $this->address = $address; return $this; }
-    public function getSiret(): ?string { return $this->siret; }
-    public function setSiret(?string $siret): static { $this->siret = $siret; return $this; }
-    public function getPaymentTerms(): ?int { return $this->paymentTerms; }
-    public function setPaymentTerms(int $paymentTerms): static { $this->paymentTerms = $paymentTerms; return $this; }
-    public function isActive(): bool { return $this->isActive; }
-    public function setIsActive(bool $isActive): static { $this->isActive = $isActive; return $this; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getParts(): Collection { return $this->parts; }
-    public function getPurchaseOrders(): Collection { return $this->purchaseOrders; }
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getContactName(): ?string
+    {
+        return $this->contactName;
+    }
+
+    public function setContactName(?string $contactName): static
+    {
+        $this->contactName = $contactName;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): static
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getSiret(): ?string
+    {
+        return $this->siret;
+    }
+
+    public function setSiret(?string $siret): static
+    {
+        $this->siret = $siret;
+
+        return $this;
+    }
+
+    public function getPaymentTerms(): ?int
+    {
+        return $this->paymentTerms;
+    }
+
+    public function setPaymentTerms(int $paymentTerms): static
+    {
+        $this->paymentTerms = $paymentTerms;
+
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getParts(): Collection
+    {
+        return $this->parts;
+    }
+
+    public function getPurchaseOrders(): Collection
+    {
+        return $this->purchaseOrders;
+    }
 
     public function getTotalOrdered(): float
     {
-        return array_sum($this->purchaseOrders->map(fn(PurchaseOrder $po) => (float) $po->getTotalAmount())->toArray());
+        return \array_sum($this->purchaseOrders->map(static fn (PurchaseOrder $po) => (float) $po->getTotalAmount())->toArray());
     }
 }

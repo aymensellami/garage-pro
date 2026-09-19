@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Intervention;
@@ -16,6 +19,7 @@ class InterventionRepository extends ServiceEntityRepository
     {
         $start = new \DateTime('first day of this month');
         $end = new \DateTime('last day of this month 23:59:59');
+
         return $this->createQueryBuilder('i')
             ->select('COUNT(i.id)')
             ->where('i.createdAt BETWEEN :start AND :end')
@@ -66,7 +70,7 @@ class InterventionRepository extends ServiceEntityRepository
         $activity = [];
         $today = new \DateTime();
 
-        for ($i = 6; $i >= 0; $i--) {
+        for ($i = 6; $i >= 0; --$i) {
             $date = clone $today;
             $date->modify("-$i days");
             $start = clone $date;
@@ -101,6 +105,7 @@ class InterventionRepository extends ServiceEntityRepository
         foreach ($results as $row) {
             $counts[$row['status']] = $row['count'];
         }
+
         return $counts;
     }
 }

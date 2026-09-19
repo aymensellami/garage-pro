@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Entity\User;
@@ -20,7 +22,7 @@ class CreateUserCommand extends Command
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private UserPasswordHasherInterface $passwordHasher
+        private UserPasswordHasherInterface $passwordHasher,
     ) {
         parent::__construct();
     }
@@ -41,7 +43,7 @@ class CreateUserCommand extends Command
 
     protected function execute(
         InputInterface $input,
-        OutputInterface $output
+        OutputInterface $output,
     ): int {
         $email = $input->getArgument('email');
         $firstName = $input->getArgument('firstName');
@@ -54,7 +56,7 @@ class CreateUserCommand extends Command
             User::ROLE_ADMIN,
         ];
 
-        if (!in_array($role, $validRoles, true)) {
+        if (!\in_array($role, $validRoles, true)) {
             $output->writeln('<error>Rôle invalide.</error>');
             $output->writeln(
                 'Rôles disponibles : ROLE_USER, ROLE_MECHANIC, ROLE_ADMIN'

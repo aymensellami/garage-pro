@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Security\Voter;
 
 use App\Entity\Intervention;
@@ -14,14 +17,16 @@ class InterventionVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::EDIT, self::DELETE, self::COMPLETE])
+        return \in_array($attribute, [self::EDIT, self::DELETE, self::COMPLETE])
             && $subject instanceof Intervention;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
-        if (!$user instanceof User) return false;
+        if (!$user instanceof User) {
+            return false;
+        }
 
         /** @var Intervention $intervention */
         $intervention = $subject;
@@ -29,7 +34,7 @@ class InterventionVoter extends Voter
         return match ($attribute) {
             self::EDIT => $intervention->canBeEdited() && ($user->isAdmin() || $intervention->getMechanic() === $user),
             self::DELETE => $user->isAdmin(),
-            self::COMPLETE => $intervention->getStatus() === Intervention::STATUS_IN_PROGRESS
+            self::COMPLETE => Intervention::STATUS_IN_PROGRESS === $intervention->getStatus()
                 && ($user->isAdmin() || $intervention->getMechanic() === $user),
             default => false,
         };

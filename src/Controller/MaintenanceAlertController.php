@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\MaintenanceAlert;
@@ -19,7 +21,7 @@ class MaintenanceAlertController extends AbstractController
     #[Route('/', name: 'app_alert_index', methods: ['GET'])]
     public function index(
         MaintenanceAlertRepository $repo,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -33,8 +35,8 @@ class MaintenanceAlertController extends AbstractController
          * accès à toutes les alertes
          */
         if (
-            $this->isGranted('ROLE_ADMIN') ||
-            $this->isGranted('ROLE_MECHANIC')
+            $this->isGranted('ROLE_ADMIN')
+            || $this->isGranted('ROLE_MECHANIC')
         ) {
             $alerts = $repo->findBy(
                 ['isResolved' => false],
@@ -84,7 +86,7 @@ class MaintenanceAlertController extends AbstractController
     public function resolve(
         MaintenanceAlert $alert,
         EntityManagerInterface $em,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -98,8 +100,8 @@ class MaintenanceAlertController extends AbstractController
          * peuvent résoudre toutes les alertes
          */
         if (
-            !$this->isGranted('ROLE_ADMIN') &&
-            !$this->isGranted('ROLE_MECHANIC')
+            !$this->isGranted('ROLE_ADMIN')
+            && !$this->isGranted('ROLE_MECHANIC')
         ) {
             /*
              * USER :
@@ -115,15 +117,13 @@ class MaintenanceAlertController extends AbstractController
              * appartenant au Customer connecté.
              */
             if (
-                !$customer ||
-                !$alert->getVehicle() ||
-                !$alert->getVehicle()->getOwner() ||
-                $alert->getVehicle()->getOwner()->getId()
+                !$customer
+                || !$alert->getVehicle()
+                || !$alert->getVehicle()->getOwner()
+                || $alert->getVehicle()->getOwner()->getId()
                     !== $customer->getId()
             ) {
-                throw $this->createAccessDeniedException(
-                    'Vous n\'êtes pas autorisé à résoudre cette alerte.'
-                );
+                throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à résoudre cette alerte.');
             }
         }
 

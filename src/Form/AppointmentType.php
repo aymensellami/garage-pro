@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Appointment;
@@ -20,7 +23,7 @@ class AppointmentType extends AbstractType
             ->add('vehicle', EntityType::class, [
                 'label' => 'Véhicule',
                 'class' => Vehicle::class,
-                'choice_label' => fn(Vehicle $v) => $v->getBrand() . ' ' . $v->getModel() . ' (' . $v->getRegistration() . ')',
+                'choice_label' => static fn (Vehicle $v) => $v->getBrand().' '.$v->getModel().' ('.$v->getRegistration().')',
             ])
             ->add('scheduledAt', DateTimeType::class, [
                 'label' => 'Date et heure',

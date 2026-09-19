@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -23,7 +25,7 @@ class DashboardController extends AbstractController
         VehicleRepository $vehicleRepository,
         AppointmentRepository $appointmentRepository,
         InvoiceRepository $invoiceRepository,
-        MaintenanceAlertRepository $maintenanceAlertRepository
+        MaintenanceAlertRepository $maintenanceAlertRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -136,10 +138,10 @@ class DashboardController extends AbstractController
             'alerts' => $alerts,
 
             'stats' => [
-                'totalVehicles' => count($vehicles),
-                'upcomingAppointments' => count($appointments),
-                'totalInvoices' => count($invoices),
-                'unresolvedAlerts' => count($alerts),
+                'totalVehicles' => \count($vehicles),
+                'upcomingAppointments' => \count($appointments),
+                'totalInvoices' => \count($invoices),
+                'unresolvedAlerts' => \count($alerts),
             ],
         ]);
     }

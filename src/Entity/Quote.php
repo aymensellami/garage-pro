@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\QuoteRepository;
@@ -67,36 +70,150 @@ class Quote
     #[ORM\PrePersist]
     public function generateNumber(): void
     {
-        if ($this->number === null) {
-            $this->number = 'DEV-' . date('Y') . '-' . str_pad(random_int(1, 99999), 5, '0', STR_PAD_LEFT);
+        if (null === $this->number) {
+            $this->number = 'DEV-'.\date('Y').'-'.\str_pad(\random_int(1, 99999), 5, '0', \STR_PAD_LEFT);
         }
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function getNumber(): ?string { return $this->number; }
-    public function getVehicle(): ?Vehicle { return $this->vehicle; }
-    public function setVehicle(?Vehicle $vehicle): static { $this->vehicle = $vehicle; return $this; }
-    public function getCustomer(): ?Customer { return $this->customer; }
-    public function setCustomer(?Customer $customer): static { $this->customer = $customer; return $this; }
-    public function getDescription(): ?string { return $this->description; }
-    public function setDescription(string $description): static { $this->description = $description; return $this; }
-    public function getOperations(): array { return $this->operations; }
-    public function setOperations(array $operations): static { $this->operations = $operations; return $this; }
-    public function getParts(): ?array { return $this->parts; }
-    public function setParts(?array $parts): static { $this->parts = $parts; return $this; }
-    public function getTotalHT(): ?string { return $this->totalHT; }
-    public function setTotalHT(string $totalHT): static { $this->totalHT = $totalHT; return $this; }
-    public function getTotalTTC(): ?string { return $this->totalTTC; }
-    public function setTotalTTC(string $totalTTC): static { $this->totalTTC = $totalTTC; return $this; }
-    public function getStatus(): ?string { return $this->status; }
-    public function setStatus(string $status): static { $this->status = $status; return $this; }
-    public function getValidUntil(): ?\DateTimeInterface { return $this->validUntil; }
-    public function setValidUntil(\DateTimeInterface $validUntil): static { $this->validUntil = $validUntil; return $this; }
-    public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
-    public function getIntervention(): ?Intervention { return $this->intervention; }
-    public function setIntervention(?Intervention $intervention): static { $this->intervention = $intervention; return $this; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function calculateTotals(): static { return $this; }
+    public function getNumber(): ?string
+    {
+        return $this->number;
+    }
+
+    public function getVehicle(): ?Vehicle
+    {
+        return $this->vehicle;
+    }
+
+    public function setVehicle(?Vehicle $vehicle): static
+    {
+        $this->vehicle = $vehicle;
+
+        return $this;
+    }
+
+    public function getCustomer(): ?Customer
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(?Customer $customer): static
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getOperations(): array
+    {
+        return $this->operations;
+    }
+
+    public function setOperations(array $operations): static
+    {
+        $this->operations = $operations;
+
+        return $this;
+    }
+
+    public function getParts(): ?array
+    {
+        return $this->parts;
+    }
+
+    public function setParts(?array $parts): static
+    {
+        $this->parts = $parts;
+
+        return $this;
+    }
+
+    public function getTotalHT(): ?string
+    {
+        return $this->totalHT;
+    }
+
+    public function setTotalHT(string $totalHT): static
+    {
+        $this->totalHT = $totalHT;
+
+        return $this;
+    }
+
+    public function getTotalTTC(): ?string
+    {
+        return $this->totalTTC;
+    }
+
+    public function setTotalTTC(string $totalTTC): static
+    {
+        $this->totalTTC = $totalTTC;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getValidUntil(): ?\DateTimeInterface
+    {
+        return $this->validUntil;
+    }
+
+    public function setValidUntil(\DateTimeInterface $validUntil): static
+    {
+        $this->validUntil = $validUntil;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function getIntervention(): ?Intervention
+    {
+        return $this->intervention;
+    }
+
+    public function setIntervention(?Intervention $intervention): static
+    {
+        $this->intervention = $intervention;
+
+        return $this;
+    }
+
+    public function calculateTotals(): static
+    {
+        return $this;
+    }
 
     public function convertToIntervention(): Intervention
     {
@@ -108,10 +225,26 @@ class Quote
         $intervention->setStatus(Intervention::STATUS_PENDING);
         $this->status = self::STATUS_CONVERTED;
         $this->intervention = $intervention;
+
         return $intervention;
     }
 
-    public function markAsAccepted(): static { $this->status = self::STATUS_ACCEPTED; return $this; }
-    public function markAsRejected(): static { $this->status = self::STATUS_REJECTED; return $this; }
-    public function isExpired(): bool { return $this->validUntil < new \DateTime() && $this->status === self::STATUS_SENT; }
+    public function markAsAccepted(): static
+    {
+        $this->status = self::STATUS_ACCEPTED;
+
+        return $this;
+    }
+
+    public function markAsRejected(): static
+    {
+        $this->status = self::STATUS_REJECTED;
+
+        return $this;
+    }
+
+    public function isExpired(): bool
+    {
+        return $this->validUntil < new \DateTime() && self::STATUS_SENT === $this->status;
+    }
 }

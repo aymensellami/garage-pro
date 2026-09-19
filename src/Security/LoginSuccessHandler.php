@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Security;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -12,23 +14,23 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerI
 class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
     public function __construct(
-        private UrlGeneratorInterface $urlGenerator
+        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
     public function onAuthenticationSuccess(
         Request $request,
-        TokenInterface $token
+        TokenInterface $token,
     ): Response {
         $user = $token->getUser();
 
-        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+        if (\in_array('ROLE_ADMIN', $user->getRoles(), true)) {
             return new RedirectResponse(
                 $this->urlGenerator->generate('app_admin_dashboard')
             );
         }
 
-        if (in_array('ROLE_MECHANIC', $user->getRoles(), true)) {
+        if (\in_array('ROLE_MECHANIC', $user->getRoles(), true)) {
             return new RedirectResponse(
                 $this->urlGenerator->generate('app_mechanic_dashboard')
             );

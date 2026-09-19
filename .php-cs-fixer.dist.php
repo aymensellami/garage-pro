@@ -17,14 +17,36 @@ return (new Config())
     ->setRules([
         '@Symfony' => true,
         '@Symfony:risky' => true,
-        'array_syntax' => ['syntax' => 'short'],
-        'ordered_imports' => ['sort_algorithm' => 'alpha'],
+
+        'array_syntax' => [
+            'syntax' => 'short',
+        ],
+
+        'ordered_imports' => [
+            'sort_algorithm' => 'alpha',
+        ],
+
         'no_unused_imports' => true,
+
         'declare_strict_types' => true,
-        'native_function_invocation' => ['include' => ['@internal'], 'scope' => 'namespaced', 'strict' => true],
+
+        'native_function_invocation' => [
+            'include' => ['@internal'],
+            'scope' => 'namespaced',
+            'strict' => true,
+        ],
+
         'php_unit_test_class_requires_covers' => false,
-        'php_unit_method_casing' => ['case' => 'camel_case'],
-        'global_namespace_import' => ['classes' => false, 'constants' => false, 'functions' => false],
+
+        'php_unit_method_casing' => [
+            'case' => 'camel_case',
+        ],
+
+        'global_namespace_import' => [
+            'import_classes' => false,
+            'import_constants' => false,
+            'import_functions' => false,
+        ],
     ])
     ->setFinder($finder)
     ->setRiskyAllowed(true)

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Tests\Functional\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -17,7 +20,7 @@ class SecurityControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $client->request('GET', '/admin/panel');
-        
+
         $this->assertResponseRedirects('/login');
     }
 }

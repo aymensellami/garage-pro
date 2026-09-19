@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\PaymentRepository;
@@ -34,14 +37,61 @@ class Payment
         $this->paidAt = new \DateTime();
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function getInvoice(): ?Invoice { return $this->invoice; }
-    public function setInvoice(?Invoice $invoice): static { $this->invoice = $invoice; return $this; }
-    public function getAmount(): ?string { return $this->amount; }
-    public function setAmount(string $amount): static { $this->amount = $amount; return $this; }
-    public function getMethod(): ?string { return $this->method; }
-    public function setMethod(string $method): static { $this->method = $method; return $this; }
-    public function getTransactionId(): ?string { return $this->transactionId; }
-    public function setTransactionId(?string $transactionId): static { $this->transactionId = $transactionId; return $this; }
-    public function getPaidAt(): ?\DateTimeInterface { return $this->paidAt; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getInvoice(): ?Invoice
+    {
+        return $this->invoice;
+    }
+
+    public function setInvoice(?Invoice $invoice): static
+    {
+        $this->invoice = $invoice;
+
+        return $this;
+    }
+
+    public function getAmount(): ?string
+    {
+        return $this->amount;
+    }
+
+    public function setAmount(string $amount): static
+    {
+        $this->amount = $amount;
+
+        return $this;
+    }
+
+    public function getMethod(): ?string
+    {
+        return $this->method;
+    }
+
+    public function setMethod(string $method): static
+    {
+        $this->method = $method;
+
+        return $this;
+    }
+
+    public function getTransactionId(): ?string
+    {
+        return $this->transactionId;
+    }
+
+    public function setTransactionId(?string $transactionId): static
+    {
+        $this->transactionId = $transactionId;
+
+        return $this;
+    }
+
+    public function getPaidAt(): ?\DateTimeInterface
+    {
+        return $this->paidAt;
+    }
 }

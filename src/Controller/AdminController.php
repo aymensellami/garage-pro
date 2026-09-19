@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -21,14 +23,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class AdminController extends AbstractController
 {
     /**
-     * Dashboard principal de l'administration
+     * Dashboard principal de l'administration.
      */
     #[Route('/panel', name: 'app_admin_dashboard', methods: ['GET'])]
     public function dashboard(
         AdminStatsService $statsService,
         UserRepository $userRepo,
         InterventionRepository $interventionRepo,
-        InvoiceRepository $invoiceRepo
+        InvoiceRepository $invoiceRepo,
     ): Response {
         return $this->render('admin/dashboard.html.twig', [
             'globalStats' => $statsService->getGlobalStats(),
@@ -56,7 +58,7 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Liste des utilisateurs
+     * Liste des utilisateurs.
      */
     #[Route('/users', name: 'app_admin_users', methods: ['GET'])]
     public function users(UserRepository $repo): Response
@@ -70,7 +72,7 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Création d'un utilisateur
+     * Création d'un utilisateur.
      */
     #[Route(
         '/users/new',
@@ -80,7 +82,7 @@ class AdminController extends AbstractController
     public function newUser(
         Request $request,
         EntityManagerInterface $em,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
     ): Response {
         $user = new User();
 
@@ -110,7 +112,7 @@ class AdminController extends AbstractController
 
             $this->addFlash(
                 'success',
-                'Utilisateur créé : ' . $user->getEmail()
+                'Utilisateur créé : '.$user->getEmail()
             );
 
             return $this->redirectToRoute(
@@ -128,7 +130,7 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Modification d'un utilisateur
+     * Modification d'un utilisateur.
      */
     #[Route(
         '/users/{id}/edit',
@@ -139,7 +141,7 @@ class AdminController extends AbstractController
         Request $request,
         User $user,
         EntityManagerInterface $em,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
     ): Response {
         $form = $this->createForm(
             AdminUserType::class,
@@ -182,14 +184,14 @@ class AdminController extends AbstractController
             'admin/user_form.html.twig',
             [
                 'form' => $form->createView(),
-                'title' => 'Modifier ' . $user->getFullName(),
+                'title' => 'Modifier '.$user->getFullName(),
                 'user' => $user,
             ]
         );
     }
 
     /**
-     * Activer / désactiver un utilisateur
+     * Activer / désactiver un utilisateur.
      */
     #[Route(
         '/users/{id}/toggle',
@@ -198,7 +200,7 @@ class AdminController extends AbstractController
     )]
     public function toggleUser(
         User $user,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
     ): Response {
         $user->setIsActive(
             !$user->isActive()
@@ -217,11 +219,11 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Statistiques détaillées
+     * Statistiques détaillées.
      */
     #[Route('/stats', name: 'app_admin_stats', methods: ['GET'])]
     public function stats(
-        AdminStatsService $statsService
+        AdminStatsService $statsService,
     ): Response {
         return $this->render(
             'admin/stats.html.twig',
@@ -248,7 +250,7 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Paramètres d'administration
+     * Paramètres d'administration.
      */
     #[Route('/settings', name: 'app_admin_settings', methods: ['GET'])]
     public function settings(): Response

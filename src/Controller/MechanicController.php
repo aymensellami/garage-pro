@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Repository\InterventionRepository;
@@ -18,7 +20,7 @@ class MechanicController extends AbstractController
     public function dashboard(
         InterventionRepository $interventionRepo,
         MaintenanceAlertRepository $alertRepo,
-        PartRepository $partRepo
+        PartRepository $partRepo,
     ): Response {
         $today = new \DateTime();
 
@@ -39,7 +41,7 @@ class MechanicController extends AbstractController
             'pendingInterventions' => $pendingInterventions,
             'alerts' => $alerts,
             'lowStockParts' => $lowStock,
-            'lowStockCount' => count($lowStock),
+            'lowStockCount' => \count($lowStock),
         ]);
     }
 }

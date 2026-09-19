@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Customer;
@@ -34,6 +37,7 @@ class CustomerController extends AbstractController
             $em->persist($customer);
             $em->flush();
             $this->addFlash('success', 'Client enregistré.');
+
             return $this->redirectToRoute('app_customer_index');
         }
 
@@ -54,8 +58,10 @@ class CustomerController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
             $this->addFlash('success', 'Client mis à jour.');
+
             return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
         }
+
         return $this->render('customer/edit.html.twig', ['customer' => $customer, 'form' => $form->createView()]);
     }
 }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Supplier;
@@ -31,8 +34,10 @@ class SupplierController extends AbstractController
             $em->persist($supplier);
             $em->flush();
             $this->addFlash('success', 'Fournisseur enregistré.');
+
             return $this->redirectToRoute('app_supplier_index');
         }
+
         return $this->render('supplier/new.html.twig', ['form' => $form->createView()]);
     }
 }

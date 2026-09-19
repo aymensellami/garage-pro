@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Intervention;
@@ -23,7 +25,7 @@ class InterventionController extends AbstractController
     #[Route('/', name: 'app_intervention_index', methods: ['GET'])]
     public function index(
         InterventionRepository $repo,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -34,8 +36,8 @@ class InterventionController extends AbstractController
 
         // Admin et mécanicien voient toutes les interventions
         if (
-            $this->isGranted('ROLE_ADMIN') ||
-            $this->isGranted('ROLE_MECHANIC')
+            $this->isGranted('ROLE_ADMIN')
+            || $this->isGranted('ROLE_MECHANIC')
         ) {
             $interventions = $repo->findBy(
                 [],
@@ -70,7 +72,7 @@ class InterventionController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         VehicleRepository $vehicleRepository,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -81,8 +83,8 @@ class InterventionController extends AbstractController
 
         // Admin et mécanicien : tous les véhicules
         if (
-            $this->isGranted('ROLE_ADMIN') ||
-            $this->isGranted('ROLE_MECHANIC')
+            $this->isGranted('ROLE_ADMIN')
+            || $this->isGranted('ROLE_MECHANIC')
         ) {
             $vehicles = $vehicleRepository->findBy(
                 [],
@@ -124,8 +126,8 @@ class InterventionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Sécurité supplémentaire pour ROLE_USER
             if (
-                !$this->isGranted('ROLE_ADMIN') &&
-                !$this->isGranted('ROLE_MECHANIC')
+                !$this->isGranted('ROLE_ADMIN')
+                && !$this->isGranted('ROLE_MECHANIC')
             ) {
                 $customer = $customerRepository->findOneBy([
                     'email' => $user->getUserIdentifier(),
@@ -134,14 +136,12 @@ class InterventionController extends AbstractController
                 $vehicle = $intervention->getVehicle();
 
                 if (
-                    !$customer ||
-                    !$vehicle ||
-                    !$vehicle->getOwner() ||
-                    $vehicle->getOwner()->getId() !== $customer->getId()
+                    !$customer
+                    || !$vehicle
+                    || !$vehicle->getOwner()
+                    || $vehicle->getOwner()->getId() !== $customer->getId()
                 ) {
-                    throw $this->createAccessDeniedException(
-                        'Vous ne pouvez créer une intervention que pour votre propre véhicule.'
-                    );
+                    throw $this->createAccessDeniedException('Vous ne pouvez créer une intervention que pour votre propre véhicule.');
                 }
             }
 
@@ -150,7 +150,7 @@ class InterventionController extends AbstractController
 
             $this->addFlash(
                 'success',
-                'Intervention créée : ' . $intervention->getReference()
+                'Intervention créée : '.$intervention->getReference()
             );
 
             return $this->redirectToRoute(
@@ -167,7 +167,7 @@ class InterventionController extends AbstractController
     #[Route('/{id}', name: 'app_intervention_show', methods: ['GET'])]
     public function show(
         Intervention $intervention,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -178,8 +178,8 @@ class InterventionController extends AbstractController
 
         // Admin et mécanicien peuvent voir toutes les interventions
         if (
-            !$this->isGranted('ROLE_ADMIN') &&
-            !$this->isGranted('ROLE_MECHANIC')
+            !$this->isGranted('ROLE_ADMIN')
+            && !$this->isGranted('ROLE_MECHANIC')
         ) {
             $customer = $customerRepository->findOneBy([
                 'email' => $user->getUserIdentifier(),
@@ -188,10 +188,10 @@ class InterventionController extends AbstractController
             $vehicle = $intervention->getVehicle();
 
             if (
-                !$customer ||
-                !$vehicle ||
-                !$vehicle->getOwner() ||
-                $vehicle->getOwner()->getId() !== $customer->getId()
+                !$customer
+                || !$vehicle
+                || !$vehicle->getOwner()
+                || $vehicle->getOwner()->getId() !== $customer->getId()
             ) {
                 throw $this->createAccessDeniedException();
             }
@@ -206,7 +206,7 @@ class InterventionController extends AbstractController
     #[IsGranted('ROLE_MECHANIC')]
     public function start(
         Intervention $intervention,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
     ): Response {
         $intervention->markAsInProgress();
 
@@ -228,7 +228,7 @@ class InterventionController extends AbstractController
     public function complete(
         Intervention $intervention,
         InterventionWorkflowService $workflow,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();

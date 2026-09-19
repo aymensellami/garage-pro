@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\PurchaseOrderLineRepository;
@@ -29,17 +32,70 @@ class PurchaseOrderLine
     #[ORM\Column]
     private ?int $receivedQty = 0;
 
-    public function getId(): ?int { return $this->id; }
-    public function getOrder(): ?PurchaseOrder { return $this->order; }
-    public function setOrder(?PurchaseOrder $order): static { $this->order = $order; return $this; }
-    public function getPart(): ?Part { return $this->part; }
-    public function setPart(?Part $part): static { $this->part = $part; return $this; }
-    public function getQuantity(): ?int { return $this->quantity; }
-    public function setQuantity(int $quantity): static { $this->quantity = $quantity; return $this; }
-    public function getUnitPrice(): ?string { return $this->unitPrice; }
-    public function setUnitPrice(string $unitPrice): static { $this->unitPrice = $unitPrice; return $this; }
-    public function getReceivedQty(): ?int { return $this->receivedQty; }
-    public function setReceivedQty(int $receivedQty): static { $this->receivedQty = $receivedQty; return $this; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getOrder(): ?PurchaseOrder
+    {
+        return $this->order;
+    }
+
+    public function setOrder(?PurchaseOrder $order): static
+    {
+        $this->order = $order;
+
+        return $this;
+    }
+
+    public function getPart(): ?Part
+    {
+        return $this->part;
+    }
+
+    public function setPart(?Part $part): static
+    {
+        $this->part = $part;
+
+        return $this;
+    }
+
+    public function getQuantity(): ?int
+    {
+        return $this->quantity;
+    }
+
+    public function setQuantity(int $quantity): static
+    {
+        $this->quantity = $quantity;
+
+        return $this;
+    }
+
+    public function getUnitPrice(): ?string
+    {
+        return $this->unitPrice;
+    }
+
+    public function setUnitPrice(string $unitPrice): static
+    {
+        $this->unitPrice = $unitPrice;
+
+        return $this;
+    }
+
+    public function getReceivedQty(): ?int
+    {
+        return $this->receivedQty;
+    }
+
+    public function setReceivedQty(int $receivedQty): static
+    {
+        $this->receivedQty = $receivedQty;
+
+        return $this;
+    }
 
     public function getRemainingQty(): int
     {

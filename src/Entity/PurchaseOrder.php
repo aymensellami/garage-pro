@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\PurchaseOrderRepository;
@@ -56,32 +59,98 @@ class PurchaseOrder
     #[ORM\PrePersist]
     public function generateReference(): void
     {
-        if ($this->reference === null) {
-            $this->reference = 'BC-' . date('Y') . '-' . str_pad(random_int(1, 99999), 5, '0', STR_PAD_LEFT);
+        if (null === $this->reference) {
+            $this->reference = 'BC-'.\date('Y').'-'.\str_pad(\random_int(1, 99999), 5, '0', \STR_PAD_LEFT);
         }
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function getSupplier(): ?Supplier { return $this->supplier; }
-    public function setSupplier(?Supplier $supplier): static { $this->supplier = $supplier; return $this; }
-    public function getReference(): ?string { return $this->reference; }
-    public function getStatus(): ?string { return $this->status; }
-    public function setStatus(string $status): static { $this->status = $status; return $this; }
-    public function getTotalAmount(): ?string { return $this->totalAmount; }
-    public function setTotalAmount(string $totalAmount): static { $this->totalAmount = $totalAmount; return $this; }
-    public function getOrderedAt(): ?\DateTimeInterface { return $this->orderedAt; }
-    public function getExpectedAt(): ?\DateTimeInterface { return $this->expectedAt; }
-    public function setExpectedAt(?\DateTimeInterface $expectedAt): static { $this->expectedAt = $expectedAt; return $this; }
-    public function getReceivedAt(): ?\DateTimeInterface { return $this->receivedAt; }
-    public function setReceivedAt(?\DateTimeInterface $receivedAt): static { $this->receivedAt = $receivedAt; return $this; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getLines(): Collection { return $this->lines; }
+    public function getSupplier(): ?Supplier
+    {
+        return $this->supplier;
+    }
+
+    public function setSupplier(?Supplier $supplier): static
+    {
+        $this->supplier = $supplier;
+
+        return $this;
+    }
+
+    public function getReference(): ?string
+    {
+        return $this->reference;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getTotalAmount(): ?string
+    {
+        return $this->totalAmount;
+    }
+
+    public function setTotalAmount(string $totalAmount): static
+    {
+        $this->totalAmount = $totalAmount;
+
+        return $this;
+    }
+
+    public function getOrderedAt(): ?\DateTimeInterface
+    {
+        return $this->orderedAt;
+    }
+
+    public function getExpectedAt(): ?\DateTimeInterface
+    {
+        return $this->expectedAt;
+    }
+
+    public function setExpectedAt(?\DateTimeInterface $expectedAt): static
+    {
+        $this->expectedAt = $expectedAt;
+
+        return $this;
+    }
+
+    public function getReceivedAt(): ?\DateTimeInterface
+    {
+        return $this->receivedAt;
+    }
+
+    public function setReceivedAt(?\DateTimeInterface $receivedAt): static
+    {
+        $this->receivedAt = $receivedAt;
+
+        return $this;
+    }
+
+    public function getLines(): Collection
+    {
+        return $this->lines;
+    }
+
     public function addLine(PurchaseOrderLine $line): static
     {
         if (!$this->lines->contains($line)) {
             $this->lines->add($line);
             $line->setOrder($this);
         }
+
         return $this;
     }
 
@@ -89,6 +158,7 @@ class PurchaseOrder
     {
         $this->status = self::STATUS_RECEIVED;
         $this->receivedAt = new \DateTime();
+
         return $this;
     }
 }

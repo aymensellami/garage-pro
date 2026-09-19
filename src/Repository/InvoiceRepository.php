@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Invoice;
@@ -20,6 +23,7 @@ class InvoiceRepository extends ServiceEntityRepository
             ->setParameter('status', Invoice::STATUS_PAID)
             ->getQuery()
             ->getSingleScalarResult();
+
         return (float) ($result ?? 0);
     }
 }

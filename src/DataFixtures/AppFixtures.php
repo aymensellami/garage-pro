@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Appointment;
@@ -50,9 +52,7 @@ class AppFixtures extends Fixture
          * Si aucun mécanicien n'existe, on arrête avec un message clair.
          */
         if (!$mechanic) {
-            throw new \RuntimeException(
-                'Aucun mécanicien trouvé. Crée d’abord mecanicien@garagepro.tn avec ROLE_MECHANIC.'
-            );
+            throw new \RuntimeException('Aucun mécanicien trouvé. Crée d’abord mecanicien@garagepro.tn avec ROLE_MECHANIC.');
         }
 
         /*
@@ -628,11 +628,11 @@ class AppFixtures extends Fixture
                 ->setDurationMinutes($data['duration'])
                 ->setNotes($data['notes']);
 
-            if ($data['status'] === Intervention::STATUS_IN_PROGRESS) {
+            if (Intervention::STATUS_IN_PROGRESS === $data['status']) {
                 $intervention->setStartedAt(new \DateTime('-2 days 14:30'));
             }
 
-            if ($data['status'] === Intervention::STATUS_COMPLETED) {
+            if (Intervention::STATUS_COMPLETED === $data['status']) {
                 $intervention
                     ->setStartedAt(new \DateTime('-10 days 09:00'))
                     ->setCompletedAt(new \DateTime('-10 days 10:00'));
@@ -649,14 +649,14 @@ class AppFixtures extends Fixture
          * ============================================================
          */
 
-        echo PHP_EOL;
-        echo "=============================================" . PHP_EOL;
-        echo "GaragePro Fixtures chargées avec succès !" . PHP_EOL;
-        echo "=============================================" . PHP_EOL;
-        echo "Clients       : 10" . PHP_EOL;
-        echo "Véhicules     : 10" . PHP_EOL;
-        echo "Rendez-vous   : 8" . PHP_EOL;
-        echo "Interventions : 10" . PHP_EOL;
-        echo "=============================================" . PHP_EOL;
+        echo \PHP_EOL;
+        echo '============================================='.\PHP_EOL;
+        echo 'GaragePro Fixtures chargées avec succès !'.\PHP_EOL;
+        echo '============================================='.\PHP_EOL;
+        echo 'Clients       : 10'.\PHP_EOL;
+        echo 'Véhicules     : 10'.\PHP_EOL;
+        echo 'Rendez-vous   : 8'.\PHP_EOL;
+        echo 'Interventions : 10'.\PHP_EOL;
+        echo '============================================='.\PHP_EOL;
     }
 }

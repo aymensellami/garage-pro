@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -19,7 +21,7 @@ class ProfileController extends AbstractController
     public function index(
         Request $request,
         EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -29,28 +31,31 @@ class ProfileController extends AbstractController
         }
 
         if ($request->isMethod('POST')) {
-            $firstName = trim((string) $request->request->get('firstName'));
-            $lastName = trim((string) $request->request->get('lastName'));
-            $email = trim((string) $request->request->get('email'));
+            $firstName = \trim((string) $request->request->get('firstName'));
+            $lastName = \trim((string) $request->request->get('lastName'));
+            $email = \trim((string) $request->request->get('email'));
 
             $newPassword = (string) $request->request->get('newPassword');
             $confirmPassword = (string) $request->request->get('confirmPassword');
 
             // Validation nom
-            if ($firstName === '') {
+            if ('' === $firstName) {
                 $this->addFlash('danger', 'Le prénom est obligatoire.');
+
                 return $this->redirectToRoute('app_profile');
             }
 
             // Validation prénom
-            if ($lastName === '') {
+            if ('' === $lastName) {
                 $this->addFlash('danger', 'Le nom est obligatoire.');
+
                 return $this->redirectToRoute('app_profile');
             }
 
             // Validation email
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if (!\filter_var($email, \FILTER_VALIDATE_EMAIL)) {
                 $this->addFlash('danger', 'L’adresse email est invalide.');
+
                 return $this->redirectToRoute('app_profile');
             }
 
@@ -59,7 +64,7 @@ class ProfileController extends AbstractController
                 ->getRepository(User::class)
                 ->findOneBy(['email' => $email]);
 
-            if ($existingUser !== null && $existingUser->getId() !== $user->getId()) {
+            if (null !== $existingUser && $existingUser->getId() !== $user->getId()) {
                 $this->addFlash(
                     'danger',
                     'Cette adresse email est déjà utilisée par un autre compte.'
@@ -74,8 +79,8 @@ class ProfileController extends AbstractController
             $user->setEmail($email);
 
             // Changement du mot de passe uniquement si rempli
-            if ($newPassword !== '') {
-                if (strlen($newPassword) < 8) {
+            if ('' !== $newPassword) {
+                if (\strlen($newPassword) < 8) {
                     $this->addFlash(
                         'danger',
                         'Le nouveau mot de passe doit contenir au moins 8 caractères.'

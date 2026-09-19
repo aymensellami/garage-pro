@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\VehicleRepository;
@@ -76,35 +79,152 @@ class Vehicle
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
-        if ($this->createdAt === null) {
+        if (null === $this->createdAt) {
             $this->createdAt = new \DateTime();
         }
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function getBrand(): ?string { return $this->brand; }
-    public function setBrand(string $brand): static { $this->brand = $brand; return $this; }
-    public function getModel(): ?string { return $this->model; }
-    public function setModel(string $model): static { $this->model = $model; return $this; }
-    public function getRegistration(): ?string { return $this->registration; }
-    public function setRegistration(string $registration): static { $this->registration = $registration; return $this; }
-    public function getVin(): ?string { return $this->vin; }
-    public function setVin(?string $vin): static { $this->vin = $vin; return $this; }
-    public function getYear(): ?int { return $this->year; }
-    public function setYear(int $year): static { $this->year = $year; return $this; }
-    public function getMileage(): ?int { return $this->mileage; }
-    public function setMileage(int $mileage): static { $this->mileage = $mileage; return $this; }
-    public function getFuelType(): ?string { return $this->fuelType; }
-    public function setFuelType(string $fuelType): static { $this->fuelType = $fuelType; return $this; }
-    public function getEngineCode(): ?string { return $this->engineCode; }
-    public function setEngineCode(?string $engineCode): static { $this->engineCode = $engineCode; return $this; }
-    public function getColor(): ?string { return $this->color; }
-    public function setColor(?string $color): static { $this->color = $color; return $this; }
-    public function getTechnicalControlDate(): ?\DateTimeInterface { return $this->technicalControlDate; }
-    public function setTechnicalControlDate(?\DateTimeInterface $technicalControlDate): static { $this->technicalControlDate = $technicalControlDate; return $this; }
-    public function getOwner(): ?Customer { return $this->owner; }
-    public function setOwner(?Customer $owner): static { $this->owner = $owner; return $this; }
-    public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getBrand(): ?string
+    {
+        return $this->brand;
+    }
+
+    public function setBrand(string $brand): static
+    {
+        $this->brand = $brand;
+
+        return $this;
+    }
+
+    public function getModel(): ?string
+    {
+        return $this->model;
+    }
+
+    public function setModel(string $model): static
+    {
+        $this->model = $model;
+
+        return $this;
+    }
+
+    public function getRegistration(): ?string
+    {
+        return $this->registration;
+    }
+
+    public function setRegistration(string $registration): static
+    {
+        $this->registration = $registration;
+
+        return $this;
+    }
+
+    public function getVin(): ?string
+    {
+        return $this->vin;
+    }
+
+    public function setVin(?string $vin): static
+    {
+        $this->vin = $vin;
+
+        return $this;
+    }
+
+    public function getYear(): ?int
+    {
+        return $this->year;
+    }
+
+    public function setYear(int $year): static
+    {
+        $this->year = $year;
+
+        return $this;
+    }
+
+    public function getMileage(): ?int
+    {
+        return $this->mileage;
+    }
+
+    public function setMileage(int $mileage): static
+    {
+        $this->mileage = $mileage;
+
+        return $this;
+    }
+
+    public function getFuelType(): ?string
+    {
+        return $this->fuelType;
+    }
+
+    public function setFuelType(string $fuelType): static
+    {
+        $this->fuelType = $fuelType;
+
+        return $this;
+    }
+
+    public function getEngineCode(): ?string
+    {
+        return $this->engineCode;
+    }
+
+    public function setEngineCode(?string $engineCode): static
+    {
+        $this->engineCode = $engineCode;
+
+        return $this;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(?string $color): static
+    {
+        $this->color = $color;
+
+        return $this;
+    }
+
+    public function getTechnicalControlDate(): ?\DateTimeInterface
+    {
+        return $this->technicalControlDate;
+    }
+
+    public function setTechnicalControlDate(?\DateTimeInterface $technicalControlDate): static
+    {
+        $this->technicalControlDate = $technicalControlDate;
+
+        return $this;
+    }
+
+    public function getOwner(): ?Customer
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?Customer $owner): static
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
 
     public function getAge(): int
     {
@@ -113,29 +233,45 @@ class Vehicle
 
     public function isTechnicalControlValid(): bool
     {
-        if ($this->technicalControlDate === null) return false;
+        if (null === $this->technicalControlDate) {
+            return false;
+        }
         $deadline = (clone $this->technicalControlDate)->modify('+2 years');
+
         return $deadline > new \DateTime();
     }
 
     public function getLastOilChange(): ?Intervention
     {
         $oilChanges = $this->interventions->filter(
-            fn(Intervention $i) => $i->getStatus() === Intervention::STATUS_COMPLETED
-                && in_array('Vidange', $i->getOperations() ?? [])
+            static fn (Intervention $i) => Intervention::STATUS_COMPLETED === $i->getStatus()
+                && \in_array('Vidange', $i->getOperations() ?? [])
         );
+
         return $oilChanges->isEmpty() ? null : $oilChanges->last();
     }
 
     /** @return Collection<int, Intervention> */
-    public function getInterventions(): Collection { return $this->interventions; }
+    public function getInterventions(): Collection
+    {
+        return $this->interventions;
+    }
 
     /** @return Collection<int, Appointment> */
-    public function getAppointments(): Collection { return $this->appointments; }
+    public function getAppointments(): Collection
+    {
+        return $this->appointments;
+    }
 
     /** @return Collection<int, MaintenanceAlert> */
-    public function getMaintenanceAlerts(): Collection { return $this->maintenanceAlerts; }
+    public function getMaintenanceAlerts(): Collection
+    {
+        return $this->maintenanceAlerts;
+    }
 
     /** @return Collection<int, Quote> */
-    public function getQuotes(): Collection { return $this->quotes; }
+    public function getQuotes(): Collection
+    {
+        return $this->quotes;
+    }
 }

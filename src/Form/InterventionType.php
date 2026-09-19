@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Intervention;
@@ -18,33 +20,32 @@ class InterventionType extends AbstractType
 {
     public function buildForm(
         FormBuilderInterface $builder,
-        array $options
+        array $options,
     ): void {
         $builder
             ->add('vehicle', EntityType::class, [
                 'label' => 'Véhicule',
                 'class' => Vehicle::class,
                 'choices' => $options['vehicles'],
-                'choice_label' => fn (Vehicle $v) =>
-                    $v->getBrand() . ' ' .
-                    $v->getModel() . ' (' .
-                    $v->getRegistration() . ')',
+                'choice_label' => static fn (Vehicle $v) => $v->getBrand().' '.
+                    $v->getModel().' ('.
+                    $v->getRegistration().')',
                 'placeholder' => 'Sélectionnez un véhicule',
             ])
 
            ->add('mechanic', EntityType::class, [
-    'label' => 'Mécanicien',
-    'class' => User::class,
-    'choice_label' => 'fullName',
-    'required' => false,
-    'placeholder' => 'Sélectionnez un mécanicien',
-    'query_builder' => function ($er) {
-        return $er->createQueryBuilder('u')
-            ->where('u.roles LIKE :role')
-            ->setParameter('role', '%ROLE_MECHANIC%')
-            ->orderBy('u.lastName', 'ASC');
-    },
-])
+               'label' => 'Mécanicien',
+               'class' => User::class,
+               'choice_label' => 'fullName',
+               'required' => false,
+               'placeholder' => 'Sélectionnez un mécanicien',
+               'query_builder' => static function ($er) {
+                   return $er->createQueryBuilder('u')
+                       ->where('u.roles LIKE :role')
+                       ->setParameter('role', '%ROLE_MECHANIC%')
+                       ->orderBy('u.lastName', 'ASC');
+               },
+           ])
 
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
@@ -84,7 +85,7 @@ class InterventionType extends AbstractType
     }
 
     public function configureOptions(
-        OptionsResolver $resolver
+        OptionsResolver $resolver,
     ): void {
         $resolver->setDefaults([
             'data_class' => Intervention::class,

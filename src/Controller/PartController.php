@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Part;
@@ -34,6 +37,7 @@ class PartController extends AbstractController
             $em->persist($part);
             $em->flush();
             $this->addFlash('success', 'Pièce enregistrée.');
+
             return $this->redirectToRoute('app_part_index');
         }
 
@@ -48,8 +52,10 @@ class PartController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
             $this->addFlash('success', 'Pièce mise à jour.');
+
             return $this->redirectToRoute('app_part_index');
         }
+
         return $this->render('part/edit.html.twig', ['part' => $part, 'form' => $form->createView()]);
     }
 }

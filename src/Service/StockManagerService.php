@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Entity\Part;
@@ -8,7 +11,9 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class StockManagerService
 {
-    public function __construct(private EntityManagerInterface $em) {}
+    public function __construct(private EntityManagerInterface $em)
+    {
+    }
 
     public function addStock(Part $part, int $quantity, string $reason, User $user): StockMovement
     {

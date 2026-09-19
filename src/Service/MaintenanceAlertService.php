@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Entity\MaintenanceAlert;
@@ -12,8 +15,9 @@ class MaintenanceAlertService
     public function __construct(
         private VehicleRepository $vehicleRepo,
         private MaintenanceAlertRepository $alertRepo,
-        private EntityManagerInterface $em
-    ) {}
+        private EntityManagerInterface $em,
+    ) {
+    }
 
     public function checkAll(): array
     {
@@ -21,7 +25,7 @@ class MaintenanceAlertService
         $vehicles = $this->vehicleRepo->findAll();
 
         foreach ($vehicles as $vehicle) {
-            $alerts = array_merge($alerts, $this->checkVehicle($vehicle));
+            $alerts = \array_merge($alerts, $this->checkVehicle($vehicle));
         }
 
         return $alerts;

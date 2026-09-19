@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Invoice;
@@ -21,7 +23,7 @@ class InvoiceController extends AbstractController
     #[Route('/', name: 'app_invoice_index', methods: ['GET'])]
     public function index(
         InvoiceRepository $repo,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -35,8 +37,8 @@ class InvoiceController extends AbstractController
          * accès à toutes les factures.
          */
         if (
-            $this->isGranted('ROLE_ADMIN') ||
-            $this->isGranted('ROLE_MECHANIC')
+            $this->isGranted('ROLE_ADMIN')
+            || $this->isGranted('ROLE_MECHANIC')
         ) {
             $invoices = $repo->findBy(
                 [],
@@ -87,7 +89,7 @@ class InvoiceController extends AbstractController
     #[Route('/{id}', name: 'app_invoice_show', methods: ['GET'])]
     public function show(
         Invoice $invoice,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -101,17 +103,15 @@ class InvoiceController extends AbstractController
          * peuvent consulter toutes les factures.
          */
         if (
-            !$this->isGranted('ROLE_ADMIN') &&
-            !$this->isGranted('ROLE_MECHANIC')
+            !$this->isGranted('ROLE_ADMIN')
+            && !$this->isGranted('ROLE_MECHANIC')
         ) {
             $customer = $customerRepository->findOneBy([
                 'email' => $user->getUserIdentifier(),
             ]);
 
             if (!$customer) {
-                throw $this->createAccessDeniedException(
-                    'Client introuvable.'
-                );
+                throw $this->createAccessDeniedException('Client introuvable.');
             }
 
             /*
@@ -123,28 +123,22 @@ class InvoiceController extends AbstractController
             $intervention = $invoice->getIntervention();
 
             if (!$intervention) {
-                throw $this->createAccessDeniedException(
-                    'Cette facture n\'est associée à aucune intervention.'
-                );
+                throw $this->createAccessDeniedException('Cette facture n\'est associée à aucune intervention.');
             }
 
             $vehicle = $intervention->getVehicle();
 
             if (!$vehicle) {
-                throw $this->createAccessDeniedException(
-                    'Cette intervention n\'est associée à aucun véhicule.'
-                );
+                throw $this->createAccessDeniedException('Cette intervention n\'est associée à aucun véhicule.');
             }
 
             $owner = $vehicle->getOwner();
 
             if (
-                !$owner ||
-                $owner->getId() !== $customer->getId()
+                !$owner
+                || $owner->getId() !== $customer->getId()
             ) {
-                throw $this->createAccessDeniedException(
-                    'Vous n\'êtes pas autorisé à consulter cette facture.'
-                );
+                throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à consulter cette facture.');
             }
         }
 
@@ -162,7 +156,7 @@ class InvoiceController extends AbstractController
         Request $request,
         Invoice $invoice,
         EntityManagerInterface $em,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -179,44 +173,36 @@ class InvoiceController extends AbstractController
          * uniquement ses propres factures.
          */
         if (
-            !$this->isGranted('ROLE_ADMIN') &&
-            !$this->isGranted('ROLE_MECHANIC')
+            !$this->isGranted('ROLE_ADMIN')
+            && !$this->isGranted('ROLE_MECHANIC')
         ) {
             $customer = $customerRepository->findOneBy([
                 'email' => $user->getUserIdentifier(),
             ]);
 
             if (!$customer) {
-                throw $this->createAccessDeniedException(
-                    'Client introuvable.'
-                );
+                throw $this->createAccessDeniedException('Client introuvable.');
             }
 
             $intervention = $invoice->getIntervention();
 
             if (!$intervention) {
-                throw $this->createAccessDeniedException(
-                    'Cette facture n\'est associée à aucune intervention.'
-                );
+                throw $this->createAccessDeniedException('Cette facture n\'est associée à aucune intervention.');
             }
 
             $vehicle = $intervention->getVehicle();
 
             if (!$vehicle) {
-                throw $this->createAccessDeniedException(
-                    'Cette intervention n\'est associée à aucun véhicule.'
-                );
+                throw $this->createAccessDeniedException('Cette intervention n\'est associée à aucun véhicule.');
             }
 
             $owner = $vehicle->getOwner();
 
             if (
-                !$owner ||
-                $owner->getId() !== $customer->getId()
+                !$owner
+                || $owner->getId() !== $customer->getId()
             ) {
-                throw $this->createAccessDeniedException(
-                    'Vous n\'êtes pas autorisé à payer cette facture.'
-                );
+                throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à payer cette facture.');
             }
         }
 
@@ -225,7 +211,7 @@ class InvoiceController extends AbstractController
          */
         $amount = $request->request->get('amount');
 
-        if ($amount === null || !is_numeric($amount)) {
+        if (null === $amount || !\is_numeric($amount)) {
             $this->addFlash(
                 'danger',
                 'Le montant du paiement est invalide.'

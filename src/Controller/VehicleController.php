@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -33,7 +35,7 @@ class VehicleController extends AbstractController
     #[Route('/', name: 'app_vehicle_index', methods: ['GET'])]
     public function index(
         VehicleRepository $repo,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -47,8 +49,8 @@ class VehicleController extends AbstractController
          * accès à tous les véhicules.
          */
         if (
-            $this->isGranted('ROLE_ADMIN') ||
-            $this->isGranted('ROLE_MECHANIC')
+            $this->isGranted('ROLE_ADMIN')
+            || $this->isGranted('ROLE_MECHANIC')
         ) {
             $vehicles = $repo->findBy(
                 [],
@@ -107,7 +109,7 @@ class VehicleController extends AbstractController
     public function new(
         Request $request,
         EntityManagerInterface $em,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -128,8 +130,8 @@ class VehicleController extends AbstractController
          * le propriétaire.
          */
         if (
-            !$this->isGranted('ROLE_ADMIN') &&
-            !$this->isGranted('ROLE_MECHANIC')
+            !$this->isGranted('ROLE_ADMIN')
+            && !$this->isGranted('ROLE_MECHANIC')
         ) {
             $customer = $customerRepository->findOneBy([
                 'email' => $user->getUserIdentifier(),
@@ -155,7 +157,6 @@ class VehicleController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             /*
              * USER :
              * sécurité supplémentaire.
@@ -164,8 +165,8 @@ class VehicleController extends AbstractController
              * le propriétaire sera toujours le Customer connecté.
              */
             if (
-                !$this->isGranted('ROLE_ADMIN') &&
-                !$this->isGranted('ROLE_MECHANIC')
+                !$this->isGranted('ROLE_ADMIN')
+                && !$this->isGranted('ROLE_MECHANIC')
             ) {
                 $customer = $customerRepository->findOneBy([
                     'email' => $user->getUserIdentifier(),
@@ -208,7 +209,7 @@ class VehicleController extends AbstractController
     #[Route('/{id}', name: 'app_vehicle_show', methods: ['GET'])]
     public function show(
         Vehicle $vehicle,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -222,21 +223,19 @@ class VehicleController extends AbstractController
          * une vérification de propriétaire.
          */
         if (
-            !$this->isGranted('ROLE_ADMIN') &&
-            !$this->isGranted('ROLE_MECHANIC')
+            !$this->isGranted('ROLE_ADMIN')
+            && !$this->isGranted('ROLE_MECHANIC')
         ) {
             $customer = $customerRepository->findOneBy([
                 'email' => $user->getUserIdentifier(),
             ]);
 
             if (
-                !$customer ||
-                !$vehicle->getOwner() ||
-                $vehicle->getOwner()->getId() !== $customer->getId()
+                !$customer
+                || !$vehicle->getOwner()
+                || $vehicle->getOwner()->getId() !== $customer->getId()
             ) {
-                throw $this->createAccessDeniedException(
-                    'Vous n\'êtes pas autorisé à consulter ce véhicule.'
-                );
+                throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à consulter ce véhicule.');
             }
         }
 
@@ -260,7 +259,7 @@ class VehicleController extends AbstractController
         Request $request,
         Vehicle $vehicle,
         EntityManagerInterface $em,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -274,21 +273,19 @@ class VehicleController extends AbstractController
          * vérification du propriétaire.
          */
         if (
-            !$this->isGranted('ROLE_ADMIN') &&
-            !$this->isGranted('ROLE_MECHANIC')
+            !$this->isGranted('ROLE_ADMIN')
+            && !$this->isGranted('ROLE_MECHANIC')
         ) {
             $customer = $customerRepository->findOneBy([
                 'email' => $user->getUserIdentifier(),
             ]);
 
             if (
-                !$customer ||
-                !$vehicle->getOwner() ||
-                $vehicle->getOwner()->getId() !== $customer->getId()
+                !$customer
+                || !$vehicle->getOwner()
+                || $vehicle->getOwner()->getId() !== $customer->getId()
             ) {
-                throw $this->createAccessDeniedException(
-                    'Vous n\'êtes pas autorisé à modifier ce véhicule.'
-                );
+                throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à modifier ce véhicule.');
             }
         }
 
@@ -308,7 +305,6 @@ class VehicleController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             /*
              * USER :
              * conserve obligatoirement son propriétaire.
@@ -318,8 +314,8 @@ class VehicleController extends AbstractController
              * VehicleType le permet.
              */
             if (
-                !$this->isGranted('ROLE_ADMIN') &&
-                !$this->isGranted('ROLE_MECHANIC')
+                !$this->isGranted('ROLE_ADMIN')
+                && !$this->isGranted('ROLE_MECHANIC')
             ) {
                 $vehicle->setOwner($owner);
             }
@@ -359,7 +355,7 @@ class VehicleController extends AbstractController
         Request $request,
         Vehicle $vehicle,
         EntityManagerInterface $em,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -373,7 +369,7 @@ class VehicleController extends AbstractController
          */
         if (
             !$this->isCsrfTokenValid(
-                'delete' . $vehicle->getId(),
+                'delete'.$vehicle->getId(),
                 $request->request->get('_token')
             )
         ) {
@@ -395,21 +391,19 @@ class VehicleController extends AbstractController
          * peuvent supprimer tous les véhicules.
          */
         if (
-            !$this->isGranted('ROLE_ADMIN') &&
-            !$this->isGranted('ROLE_MECHANIC')
+            !$this->isGranted('ROLE_ADMIN')
+            && !$this->isGranted('ROLE_MECHANIC')
         ) {
             $customer = $customerRepository->findOneBy([
                 'email' => $user->getUserIdentifier(),
             ]);
 
             if (
-                !$customer ||
-                !$vehicle->getOwner() ||
-                $vehicle->getOwner()->getId() !== $customer->getId()
+                !$customer
+                || !$vehicle->getOwner()
+                || $vehicle->getOwner()->getId() !== $customer->getId()
             ) {
-                throw $this->createAccessDeniedException(
-                    'Vous n\'êtes pas autorisé à supprimer ce véhicule.'
-                );
+                throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à supprimer ce véhicule.');
             }
         }
 

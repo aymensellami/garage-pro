@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Appointment;
@@ -31,7 +33,7 @@ class AppointmentController extends AbstractController
     #[Route('/', name: 'app_appointment_index', methods: ['GET'])]
     public function index(
         AppointmentRepository $repo,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -51,8 +53,8 @@ class AppointmentController extends AbstractController
          * voient tous les rendez-vous.
          */
         if (
-            $this->isGranted('ROLE_ADMIN') ||
-            $this->isGranted('ROLE_MECHANIC')
+            $this->isGranted('ROLE_ADMIN')
+            || $this->isGranted('ROLE_MECHANIC')
         ) {
             $appointments = $repo->findBy(
                 [],
@@ -140,7 +142,7 @@ class AppointmentController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         CustomerRepository $customerRepository,
-        VehicleRepository $vehicleRepository
+        VehicleRepository $vehicleRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -158,8 +160,8 @@ class AppointmentController extends AbstractController
         $customer = null;
 
         if (
-            !$this->isGranted('ROLE_ADMIN') &&
-            !$this->isGranted('ROLE_MECHANIC')
+            !$this->isGranted('ROLE_ADMIN')
+            && !$this->isGranted('ROLE_MECHANIC')
         ) {
             $customer = $customerRepository->findOneBy([
                 'email' => $user->getUserIdentifier(),
@@ -188,7 +190,6 @@ class AppointmentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             /*
              * Récupérer le véhicule sélectionné.
              */
@@ -214,16 +215,14 @@ class AppointmentController extends AbstractController
              * appartient bien au Customer connecté.
              */
             if (
-                !$this->isGranted('ROLE_ADMIN') &&
-                !$this->isGranted('ROLE_MECHANIC')
+                !$this->isGranted('ROLE_ADMIN')
+                && !$this->isGranted('ROLE_MECHANIC')
             ) {
                 if (
-                    !$vehicle->getOwner() ||
-                    $vehicle->getOwner()->getId() !== $customer->getId()
+                    !$vehicle->getOwner()
+                    || $vehicle->getOwner()->getId() !== $customer->getId()
                 ) {
-                    throw $this->createAccessDeniedException(
-                        'Vous ne pouvez pas créer un rendez-vous pour ce véhicule.'
-                    );
+                    throw $this->createAccessDeniedException('Vous ne pouvez pas créer un rendez-vous pour ce véhicule.');
                 }
             }
 
@@ -272,7 +271,7 @@ class AppointmentController extends AbstractController
     public function confirm(
         Appointment $appointment,
         EntityManagerInterface $em,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -286,23 +285,21 @@ class AppointmentController extends AbstractController
          * vérification de propriété.
          */
         if (
-            !$this->isGranted('ROLE_ADMIN') &&
-            !$this->isGranted('ROLE_MECHANIC')
+            !$this->isGranted('ROLE_ADMIN')
+            && !$this->isGranted('ROLE_MECHANIC')
         ) {
             $customer = $customerRepository->findOneBy([
                 'email' => $user->getUserIdentifier(),
             ]);
 
             if (
-                !$customer ||
-                !$appointment->getVehicle() ||
-                !$appointment->getVehicle()->getOwner() ||
-                $appointment->getVehicle()->getOwner()->getId()
+                !$customer
+                || !$appointment->getVehicle()
+                || !$appointment->getVehicle()->getOwner()
+                || $appointment->getVehicle()->getOwner()->getId()
                     !== $customer->getId()
             ) {
-                throw $this->createAccessDeniedException(
-                    'Vous n\'êtes pas autorisé à confirmer ce rendez-vous.'
-                );
+                throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à confirmer ce rendez-vous.');
             }
         }
 
