@@ -215,7 +215,7 @@ jobs:
             xargs -0 -n1 php -l
 
       # ----------------------------------------------------------
-      # 15. PHPUnit - Diagnostic détaillé
+      # 15. PHPUnit
       # ----------------------------------------------------------
       - name: Run PHPUnit
         env:
@@ -260,11 +260,18 @@ jobs:
           echo "SecurityControllerTest"
           echo "========================================"
 
+          mkdir -p var
+
           vendor/bin/phpunit \
-            --filter SecurityControllerTest \
+            --configuration phpunit.xml.dist \
+            --filter 'SecurityControllerTest' \
             --display-errors \
-            --display-phpunit-deprecations \
-            --debug
+            --display-warnings \
+            --display-deprecations \
+            --display-incomplete \
+            --display-skipped \
+            --testdox \
+            --log-junit var/phpunit.xml
 
 
   # ============================================================
