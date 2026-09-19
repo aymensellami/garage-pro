@@ -1,14 +1,12 @@
 name: CI - Tests et Qualite
 
 on:
+  workflow_dispatch:
+
   push:
     branches:
       - main
       - develop
-
-  pull_request:
-    branches:
-      - main
 
 jobs:
 
