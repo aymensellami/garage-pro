@@ -16,7 +16,8 @@ class SecurityControllerTest extends WebTestCase
     public function testRedirectToLoginWhenNotAuthenticated(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/admin');
+        $client->request('GET', '/admin/panel');
+        
         $this->assertResponseRedirects('/login');
     }
 }
