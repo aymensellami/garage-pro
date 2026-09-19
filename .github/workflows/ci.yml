@@ -20,11 +20,14 @@ jobs:
     services:
       mysql:
         image: mysql:8.0
+
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: garage_pro_test
+
         ports:
           - 3306:3306
+
         options: >-
           --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
           --health-interval=10s
@@ -77,6 +80,8 @@ jobs:
           APP_ENV=test
           APP_SECRET=garagepro-ci-secret
           DATABASE_URL="mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+          MAILER_DSN="null://null"
+          MESSENGER_TRANSPORT_DSN="in-memory://"
           EOF
 
           cp .env .env.test
@@ -87,6 +92,7 @@ jobs:
       - name: Install dependencies
         env:
           APP_ENV: test
+          APP_DEBUG: '1'
         run: |
           composer install \
             --prefer-dist \
@@ -99,11 +105,18 @@ jobs:
       - name: Verify test environment
         env:
           APP_ENV: test
-          APP_DEBUG: 1
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
+          MAILER_DSN: null://null
+          MESSENGER_TRANSPORT_DSN: in-memory://
         run: |
           php bin/console about --env=test
+
           php bin/console debug:router app_admin_dashboard
+
           php bin/console debug:router app_login
+
           php bin/console lint:container --env=test
 
       # ----------------------------------------------------------
@@ -112,57 +125,85 @@ jobs:
       - name: Clear Symfony cache
         env:
           APP_ENV: test
-          APP_DEBUG: 1
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
+          MAILER_DSN: null://null
+          MESSENGER_TRANSPORT_DSN: in-memory://
         run: |
           php bin/console cache:clear --env=test
 
       # ----------------------------------------------------------
-      # 10. Création de la base TEST
+      # 10. Vérification connexion MySQL
+      # ----------------------------------------------------------
+      - name: Check MySQL connection
+        env:
+          APP_ENV: test
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
+        run: |
+          php bin/console doctrine:query:sql \
+            "SELECT 1" \
+            --env=test
+
+      # ----------------------------------------------------------
+      # 11. Création de la base TEST
       # ----------------------------------------------------------
       - name: Create test database
         env:
           APP_ENV: test
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
         run: |
           php bin/console doctrine:database:create \
             --if-not-exists \
             --env=test
 
       # ----------------------------------------------------------
-      # 11. Exécution des migrations
+      # 12. Exécution des migrations
       # ----------------------------------------------------------
       - name: Run migrations
         env:
           APP_ENV: test
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
         run: |
           php bin/console doctrine:migrations:migrate \
             --no-interaction \
             --env=test
 
       # ----------------------------------------------------------
-      # 12. Validation Doctrine
+      # 13. Validation Doctrine
       # ----------------------------------------------------------
       - name: Validate Doctrine mapping
         env:
           APP_ENV: test
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
         run: |
           php bin/console doctrine:schema:validate \
             --env=test
 
       # ----------------------------------------------------------
-      # 13. Vérification syntaxe PHP
+      # 14. Vérification syntaxe PHP
       # ----------------------------------------------------------
       - name: PHP syntax check
         run: |
-          find src tests -name "*.php" -print0 | xargs -0 -n1 php -l
+          find src tests \
+            -name "*.php" \
+            -print0 | \
+            xargs -0 -n1 php -l
 
       # ----------------------------------------------------------
-      # 14. PHPUnit
+      # 15. PHPUnit
       # ----------------------------------------------------------
       - name: Run PHPUnit
         env:
           APP_ENV: test
-          APP_DEBUG: 1
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
+          MAILER_DSN: null://null
+          MESSENGER_TRANSPORT_DSN: in-memory://
         run: |
+          php bin/console cache:clear --env=test
+
           vendor/bin/phpunit \
             --display-errors \
             --display-phpunit-deprecations
@@ -203,6 +244,8 @@ jobs:
           APP_ENV=test
           APP_SECRET=garagepro-ci-secret
           DATABASE_URL="mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+          MAILER_DSN="null://null"
+          MESSENGER_TRANSPORT_DSN="in-memory://"
           EOF
 
           cp .env .env.test
@@ -213,6 +256,7 @@ jobs:
       - name: Install dependencies
         env:
           APP_ENV: test
+          APP_DEBUG: '1'
         run: |
           composer install \
             --prefer-dist \
@@ -224,7 +268,10 @@ jobs:
       # ----------------------------------------------------------
       - name: PHP syntax check
         run: |
-          find src tests -name "*.php" -print0 | xargs -0 -n1 php -l
+          find src tests \
+            -name "*.php" \
+            -print0 | \
+            xargs -0 -n1 php -l
 
       # ----------------------------------------------------------
       # 6. PHP CS Fixer
@@ -251,6 +298,10 @@ jobs:
       - name: Twig Lint
         env:
           APP_ENV: test
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          MAILER_DSN: null://null
+          MESSENGER_TRANSPORT_DSN: in-memory://
         run: |
           php bin/console lint:twig templates
 
@@ -260,6 +311,10 @@ jobs:
       - name: YAML Lint
         env:
           APP_ENV: test
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          MAILER_DSN: null://null
+          MESSENGER_TRANSPORT_DSN: in-memory://
         run: |
           php bin/console lint:yaml config
 
@@ -269,5 +324,9 @@ jobs:
       - name: Container Lint
         env:
           APP_ENV: test
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          MAILER_DSN: null://null
+          MESSENGER_TRANSPORT_DSN: in-memory://
         run: |
           php bin/console lint:container --env=test
