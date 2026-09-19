@@ -107,15 +107,31 @@ jobs:
           APP_ENV: test
           APP_DEBUG: '1'
           APP_SECRET: garagepro-ci-secret
-          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
-          MAILER_DSN: null://null
-          MESSENGER_TRANSPORT_DSN: in-memory://
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+          MAILER_DSN: "null://null"
+          MESSENGER_TRANSPORT_DSN: "in-memory://"
         run: |
+          echo "========================================"
+          echo "Symfony test environment"
+          echo "========================================"
+
           php bin/console about --env=test
 
-          php bin/console debug:router app_admin_dashboard
+          echo "========================================"
+          echo "Login route"
+          echo "========================================"
 
-          php bin/console debug:router app_login
+          php bin/console debug:router app_login --env=test
+
+          echo "========================================"
+          echo "Admin route"
+          echo "========================================"
+
+          php bin/console debug:router app_admin_dashboard --env=test
+
+          echo "========================================"
+          echo "Container validation"
+          echo "========================================"
 
           php bin/console lint:container --env=test
 
@@ -127,9 +143,9 @@ jobs:
           APP_ENV: test
           APP_DEBUG: '1'
           APP_SECRET: garagepro-ci-secret
-          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
-          MAILER_DSN: null://null
-          MESSENGER_TRANSPORT_DSN: in-memory://
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+          MAILER_DSN: "null://null"
+          MESSENGER_TRANSPORT_DSN: "in-memory://"
         run: |
           php bin/console cache:clear --env=test
 
@@ -139,7 +155,8 @@ jobs:
       - name: Check MySQL connection
         env:
           APP_ENV: test
-          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
+          APP_DEBUG: '1'
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
         run: |
           php bin/console doctrine:query:sql \
             "SELECT 1" \
@@ -151,7 +168,9 @@ jobs:
       - name: Create test database
         env:
           APP_ENV: test
-          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
         run: |
           php bin/console doctrine:database:create \
             --if-not-exists \
@@ -163,7 +182,9 @@ jobs:
       - name: Run migrations
         env:
           APP_ENV: test
-          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
         run: |
           php bin/console doctrine:migrations:migrate \
             --no-interaction \
@@ -175,7 +196,9 @@ jobs:
       - name: Validate Doctrine mapping
         env:
           APP_ENV: test
-          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
         run: |
           php bin/console doctrine:schema:validate \
             --env=test
@@ -191,22 +214,56 @@ jobs:
             xargs -0 -n1 php -l
 
       # ----------------------------------------------------------
-      # 15. PHPUnit
+      # 15. PHPUnit - Diagnostic détaillé
       # ----------------------------------------------------------
       - name: Run PHPUnit
         env:
           APP_ENV: test
           APP_DEBUG: '1'
           APP_SECRET: garagepro-ci-secret
-          DATABASE_URL: mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0
-          MAILER_DSN: null://null
-          MESSENGER_TRANSPORT_DSN: in-memory://
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+          MAILER_DSN: "null://null"
+          MESSENGER_TRANSPORT_DSN: "in-memory://"
         run: |
+          echo "========================================"
+          echo "Symfony test kernel"
+          echo "========================================"
+
+          php bin/console about --env=test
+
+          echo "========================================"
+          echo "Container validation"
+          echo "========================================"
+
+          php bin/console lint:container --env=test
+
+          echo "========================================"
+          echo "Clear Symfony cache"
+          echo "========================================"
+
           php bin/console cache:clear --env=test
 
+          echo "========================================"
+          echo "Login route"
+          echo "========================================"
+
+          php bin/console debug:router app_login --env=test
+
+          echo "========================================"
+          echo "Admin route"
+          echo "========================================"
+
+          php bin/console debug:router app_admin_dashboard --env=test
+
+          echo "========================================"
+          echo "SecurityControllerTest"
+          echo "========================================"
+
           vendor/bin/phpunit \
+            --filter SecurityControllerTest \
             --display-errors \
-            --display-phpunit-deprecations
+            --display-phpunit-deprecations \
+            --verbose
 
 
   # ============================================================
@@ -300,8 +357,8 @@ jobs:
           APP_ENV: test
           APP_DEBUG: '1'
           APP_SECRET: garagepro-ci-secret
-          MAILER_DSN: null://null
-          MESSENGER_TRANSPORT_DSN: in-memory://
+          MAILER_DSN: "null://null"
+          MESSENGER_TRANSPORT_DSN: "in-memory://"
         run: |
           php bin/console lint:twig templates
 
@@ -313,8 +370,8 @@ jobs:
           APP_ENV: test
           APP_DEBUG: '1'
           APP_SECRET: garagepro-ci-secret
-          MAILER_DSN: null://null
-          MESSENGER_TRANSPORT_DSN: in-memory://
+          MAILER_DSN: "null://null"
+          MESSENGER_TRANSPORT_DSN: "in-memory://"
         run: |
           php bin/console lint:yaml config
 
@@ -326,7 +383,7 @@ jobs:
           APP_ENV: test
           APP_DEBUG: '1'
           APP_SECRET: garagepro-ci-secret
-          MAILER_DSN: null://null
-          MESSENGER_TRANSPORT_DSN: in-memory://
+          MAILER_DSN: "null://null"
+          MESSENGER_TRANSPORT_DSN: "in-memory://"
         run: |
           php bin/console lint:container --env=test
