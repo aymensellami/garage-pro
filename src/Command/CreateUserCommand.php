@@ -8,6 +8,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -76,6 +77,7 @@ class CreateUserCommand extends Command
         }
 
         // Demande sécurisée du mot de passe
+        /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
 
         $question = new Question('Mot de passe : ');

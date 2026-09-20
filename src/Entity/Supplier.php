@@ -41,9 +41,15 @@ class Supplier
     #[ORM\Column]
     private bool $isActive = true;
 
+    /**
+     * @var Collection<int, Part>
+     */
     #[ORM\OneToMany(mappedBy: 'supplier', targetEntity: Part::class)]
     private Collection $parts;
 
+    /**
+     * @var Collection<int, PurchaseOrder>
+     */
     #[ORM\OneToMany(mappedBy: 'supplier', targetEntity: PurchaseOrder::class)]
     private Collection $purchaseOrders;
 
@@ -154,11 +160,17 @@ class Supplier
         return $this;
     }
 
+    /**
+     * @return Collection<int, Part>
+     */
     public function getParts(): Collection
     {
         return $this->parts;
     }
 
+    /**
+     * @return Collection<int, PurchaseOrder>
+     */
     public function getPurchaseOrders(): Collection
     {
         return $this->purchaseOrders;

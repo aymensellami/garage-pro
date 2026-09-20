@@ -47,6 +47,9 @@ class PurchaseOrder
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $receivedAt = null;
 
+    /**
+     * @var Collection<int, PurchaseOrderLine>
+     */
     #[ORM\OneToMany(mappedBy: 'order', targetEntity: PurchaseOrderLine::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $lines;
 
@@ -60,7 +63,7 @@ class PurchaseOrder
     public function generateReference(): void
     {
         if (null === $this->reference) {
-            $this->reference = 'BC-'.\date('Y').'-'.\str_pad(\random_int(1, 99999), 5, '0', \STR_PAD_LEFT);
+            $this->reference = 'BC-'.\date('Y').'-'.\str_pad((string) \random_int(1, 99999), 5, '0', \STR_PAD_LEFT);
         }
     }
 
@@ -139,6 +142,9 @@ class PurchaseOrder
         return $this;
     }
 
+    /**
+     * @return Collection<int, PurchaseOrderLine>
+     */
     public function getLines(): Collection
     {
         return $this->lines;

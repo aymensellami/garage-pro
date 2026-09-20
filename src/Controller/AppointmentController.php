@@ -35,7 +35,6 @@ class AppointmentController extends AbstractController
         AppointmentRepository $repo,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -144,7 +143,6 @@ class AppointmentController extends AbstractController
         CustomerRepository $customerRepository,
         VehicleRepository $vehicleRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -220,7 +218,7 @@ class AppointmentController extends AbstractController
             ) {
                 if (
                     !$vehicle->getOwner()
-                    || $vehicle->getOwner()->getId() !== $customer->getId()
+                    || $vehicle->getOwner()->getId() !== $customer?->getId()
                 ) {
                     throw $this->createAccessDeniedException('Vous ne pouvez pas créer un rendez-vous pour ce véhicule.');
                 }
@@ -273,7 +271,6 @@ class AppointmentController extends AbstractController
         EntityManagerInterface $em,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {

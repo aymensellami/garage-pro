@@ -37,7 +37,6 @@ class VehicleController extends AbstractController
         VehicleRepository $repo,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -111,7 +110,6 @@ class VehicleController extends AbstractController
         EntityManagerInterface $em,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -211,7 +209,6 @@ class VehicleController extends AbstractController
         Vehicle $vehicle,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -261,7 +258,6 @@ class VehicleController extends AbstractController
         EntityManagerInterface $em,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -357,7 +353,6 @@ class VehicleController extends AbstractController
         EntityManagerInterface $em,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {

@@ -9,6 +9,9 @@ use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
+/**
+ * @extends Voter<string, Intervention>
+ */
 class InterventionVoter extends Voter
 {
     public const EDIT = 'INTERVENTION_EDIT';
@@ -17,7 +20,7 @@ class InterventionVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return \in_array($attribute, [self::EDIT, self::DELETE, self::COMPLETE])
+        return \in_array($attribute, [self::EDIT, self::DELETE, self::COMPLETE], true)
             && $subject instanceof Intervention;
     }
 

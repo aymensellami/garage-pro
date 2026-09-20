@@ -61,9 +61,15 @@ class Invoice
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $paymentMethod = null;
 
+    /**
+     * @var Collection<int, InvoiceLine>
+     */
     #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceLine::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $lines;
 
+    /**
+     * @var Collection<int, Payment>
+     */
     #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: Payment::class, orphanRemoval: true)]
     private Collection $payments;
 
@@ -79,7 +85,7 @@ class Invoice
     public function generateNumber(): void
     {
         if (null === $this->number) {
-            $this->number = 'FAC-'.\date('Y').'-'.\str_pad(\random_int(1, 99999), 5, '0', \STR_PAD_LEFT);
+            $this->number = 'FAC-'.\date('Y').'-'.\str_pad((string) \random_int(1, 99999), 5, '0', \STR_PAD_LEFT);
         }
     }
 
@@ -206,6 +212,9 @@ class Invoice
         return $this;
     }
 
+    /**
+     * @return Collection<int, InvoiceLine>
+     */
     public function getLines(): Collection
     {
         return $this->lines;
@@ -221,6 +230,9 @@ class Invoice
         return $this;
     }
 
+    /**
+     * @return Collection<int, Payment>
+     */
     public function getPayments(): Collection
     {
         return $this->payments;

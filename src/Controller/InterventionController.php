@@ -27,7 +27,6 @@ class InterventionController extends AbstractController
         InterventionRepository $repo,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -74,7 +73,6 @@ class InterventionController extends AbstractController
         VehicleRepository $vehicleRepository,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -169,7 +167,6 @@ class InterventionController extends AbstractController
         Intervention $intervention,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -230,7 +227,6 @@ class InterventionController extends AbstractController
         InterventionWorkflowService $workflow,
         EntityManagerInterface $em,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {

@@ -23,7 +23,6 @@ class MaintenanceAlertController extends AbstractController
         MaintenanceAlertRepository $repo,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -88,7 +87,6 @@ class MaintenanceAlertController extends AbstractController
         EntityManagerInterface $em,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {

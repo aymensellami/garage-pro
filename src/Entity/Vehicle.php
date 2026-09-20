@@ -55,15 +55,27 @@ class Vehicle
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $createdAt = null;
 
+    /**
+     * @var Collection<int, Intervention>
+     */
     #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Intervention::class, orphanRemoval: true)]
     private Collection $interventions;
 
+    /**
+     * @var Collection<int, Appointment>
+     */
     #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Appointment::class, orphanRemoval: true)]
     private Collection $appointments;
 
+    /**
+     * @var Collection<int, MaintenanceAlert>
+     */
     #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: MaintenanceAlert::class, orphanRemoval: true)]
     private Collection $maintenanceAlerts;
 
+    /**
+     * @var Collection<int, Quote>
+     */
     #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Quote::class)]
     private Collection $quotes;
 
@@ -228,7 +240,7 @@ class Vehicle
 
     public function getAge(): int
     {
-        return (new \DateTime())->format('Y') - $this->year;
+        return (int) (new \DateTime())->format('Y') - (int) $this->year;
     }
 
     public function isTechnicalControlValid(): bool
@@ -236,7 +248,7 @@ class Vehicle
         if (null === $this->technicalControlDate) {
             return false;
         }
-        $deadline = (clone $this->technicalControlDate)->modify('+2 years');
+        $deadline = \DateTimeImmutable::createFromInterface($this->technicalControlDate)->modify('+2 years');
 
         return $deadline > new \DateTime();
     }
@@ -245,7 +257,7 @@ class Vehicle
     {
         $oilChanges = $this->interventions->filter(
             static fn (Intervention $i) => Intervention::STATUS_COMPLETED === $i->getStatus()
-                && \in_array('Vidange', $i->getOperations() ?? [])
+                && \in_array('Vidange', $i->getOperations(), true)
         );
 
         return $oilChanges->isEmpty() ? null : $oilChanges->last();

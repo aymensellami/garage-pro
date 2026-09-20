@@ -19,6 +19,9 @@ class MaintenanceAlertService
     ) {
     }
 
+    /**
+     * @return MaintenanceAlert[]
+     */
     public function checkAll(): array
     {
         $alerts = [];
@@ -31,6 +34,9 @@ class MaintenanceAlertService
         return $alerts;
     }
 
+    /**
+     * @return MaintenanceAlert[]
+     */
     public function checkVehicle(Vehicle $vehicle): array
     {
         $alerts = [];
@@ -39,8 +45,8 @@ class MaintenanceAlertService
         if (!$vehicle->isTechnicalControlValid()) {
             $alerts[] = $this->createAlert($vehicle, MaintenanceAlert::TYPE_TECHNICAL_CONTROL, MaintenanceAlert::SEVERITY_DANGER, 'CT expiré ou proche');
         } elseif ($vehicle->getTechnicalControlDate()) {
-            $deadline = (clone $vehicle->getTechnicalControlDate())->modify('+23 months');
-            if ($deadline < new \DateTime('+30 days')) {
+            $deadline = \DateTimeImmutable::createFromInterface($vehicle->getTechnicalControlDate())->modify('+23 months');
+            if ($deadline < new \DateTimeImmutable('+30 days')) {
                 $alerts[] = $this->createAlert($vehicle, MaintenanceAlert::TYPE_TECHNICAL_CONTROL, MaintenanceAlert::SEVERITY_WARNING, 'CT à renouveler dans moins de 30 jours');
             }
         }

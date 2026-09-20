@@ -23,7 +23,6 @@ class ProfileController extends AbstractController
         EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $passwordHasher,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {

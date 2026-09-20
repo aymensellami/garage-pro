@@ -37,9 +37,15 @@ class Quote
     #[ORM\Column(type: 'text')]
     private ?string $description = null;
 
+    /**
+     * @var array<int, array<string, mixed>>
+     */
     #[ORM\Column(type: 'json')]
     private array $operations = [];
 
+    /**
+     * @var array<int, array<string, mixed>>|null
+     */
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $parts = null;
 
@@ -71,7 +77,7 @@ class Quote
     public function generateNumber(): void
     {
         if (null === $this->number) {
-            $this->number = 'DEV-'.\date('Y').'-'.\str_pad(\random_int(1, 99999), 5, '0', \STR_PAD_LEFT);
+            $this->number = 'DEV-'.\date('Y').'-'.\str_pad((string) \random_int(1, 99999), 5, '0', \STR_PAD_LEFT);
         }
     }
 
@@ -121,11 +127,17 @@ class Quote
         return $this;
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function getOperations(): array
     {
         return $this->operations;
     }
 
+    /**
+     * @param array<int, array<string, mixed>> $operations
+     */
     public function setOperations(array $operations): static
     {
         $this->operations = $operations;
@@ -133,11 +145,17 @@ class Quote
         return $this;
     }
 
+    /**
+     * @return array<int, array<string, mixed>>|null
+     */
     public function getParts(): ?array
     {
         return $this->parts;
     }
 
+    /**
+     * @param array<int, array<string, mixed>>|null $parts
+     */
     public function setParts(?array $parts): static
     {
         $this->parts = $parts;
@@ -220,7 +238,6 @@ class Quote
         $intervention = new Intervention();
         $intervention->setVehicle($this->vehicle);
         $intervention->setDescription($this->description);
-        $intervention->setOperations($this->operations);
         $intervention->setEstimatedCost($this->totalHT);
         $intervention->setStatus(Intervention::STATUS_PENDING);
         $this->status = self::STATUS_CONVERTED;
@@ -245,6 +262,10 @@ class Quote
 
     public function isExpired(): bool
     {
+        if (null === $this->validUntil) {
+            return false;
+        }
+
         return $this->validUntil < new \DateTime() && self::STATUS_SENT === $this->status;
     }
 }

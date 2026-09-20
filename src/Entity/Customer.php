@@ -42,12 +42,21 @@ class Customer
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $createdAt = null;
 
+    /**
+     * @var Collection<int, Vehicle>
+     */
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Vehicle::class, orphanRemoval: true)]
     private Collection $vehicles;
 
+    /**
+     * @var Collection<int, Invoice>
+     */
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Invoice::class)]
     private Collection $invoices;
 
+    /**
+     * @var Collection<int, Quote>
+     */
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Quote::class)]
     private Collection $quotes;
 
@@ -196,8 +205,12 @@ class Customer
         $last = null;
         foreach ($this->vehicles as $vehicle) {
             foreach ($vehicle->getInterventions() as $intervention) {
-                if (null === $last || $intervention->getScheduledAt() > $last) {
-                    $last = $intervention->getScheduledAt();
+                $scheduledAt = $intervention->getScheduledAt();
+                if (null === $scheduledAt) {
+                    continue;
+                }
+                if (null === $last || $scheduledAt > $last) {
+                    $last = $scheduledAt;
                 }
             }
         }

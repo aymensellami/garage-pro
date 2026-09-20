@@ -8,6 +8,9 @@ use App\Entity\Appointment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Appointment>
+ */
 class AppointmentRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -15,6 +18,9 @@ class AppointmentRepository extends ServiceEntityRepository
         parent::__construct($registry, Appointment::class);
     }
 
+    /**
+     * @return Appointment[]
+     */
     public function findForDateRange(\DateTimeInterface $start, \DateTimeInterface $end): array
     {
         return $this->createQueryBuilder('a')

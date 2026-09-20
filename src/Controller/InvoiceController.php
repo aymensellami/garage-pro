@@ -25,7 +25,6 @@ class InvoiceController extends AbstractController
         InvoiceRepository $repo,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -91,7 +90,6 @@ class InvoiceController extends AbstractController
         Invoice $invoice,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -158,7 +156,6 @@ class InvoiceController extends AbstractController
         EntityManagerInterface $em,
         CustomerRepository $customerRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -265,7 +262,7 @@ class InvoiceController extends AbstractController
         $payment = new Payment();
 
         $payment->setInvoice($invoice);
-        $payment->setAmount($amount);
+        $payment->setAmount(\number_format($amount, 2, '.', ''));
         $payment->setMethod($method);
 
         $em->persist($payment);

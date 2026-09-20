@@ -48,9 +48,15 @@ class Part
     #[ORM\Column]
     private bool $isActive = true;
 
+    /**
+     * @var Collection<int, InterventionPart>
+     */
     #[ORM\OneToMany(mappedBy: 'part', targetEntity: InterventionPart::class)]
     private Collection $interventionParts;
 
+    /**
+     * @var Collection<int, StockMovement>
+     */
     #[ORM\OneToMany(mappedBy: 'part', targetEntity: StockMovement::class, orphanRemoval: true)]
     private Collection $stockMovements;
 
@@ -197,7 +203,7 @@ class Part
 
     public function getInventoryValue(): float
     {
-        return (float) $this->unitPrice * $this->stockQuantity;
+        return (float) $this->unitPrice * (int) $this->stockQuantity;
     }
 
     public function reserve(int $qty): bool

@@ -27,7 +27,6 @@ class DashboardController extends AbstractController
         InvoiceRepository $invoiceRepository,
         MaintenanceAlertRepository $maintenanceAlertRepository,
     ): Response {
-        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user instanceof User) {

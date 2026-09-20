@@ -28,6 +28,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
+    /**
+     * @var string[]
+     */
     #[ORM\Column]
     private array $roles = [];
 
@@ -49,9 +52,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $createdAt = null;
 
+    /**
+     * @var Collection<int, Intervention>
+     */
     #[ORM\OneToMany(mappedBy: 'mechanic', targetEntity: Intervention::class)]
     private Collection $interventions;
 
+    /**
+     * @var Collection<int, StockMovement>
+     */
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: StockMovement::class)]
     private Collection $stockMovements;
 
@@ -84,14 +93,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->email;
     }
 
+    /**
+     * @return string[]
+     */
     public function getRoles(): array
     {
         $roles = $this->roles;
         $roles[] = self::ROLE_USER;
 
-        return \array_unique($roles);
+        return \array_values(\array_unique($roles));
     }
 
+    /**
+     * @param string[] $roles
+     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -175,12 +190,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isMechanic(): bool
     {
-        return \in_array(self::ROLE_MECHANIC, $this->getRoles());
+        return \in_array(self::ROLE_MECHANIC, $this->getRoles(), true);
     }
 
     public function isAdmin(): bool
     {
-        return \in_array(self::ROLE_ADMIN, $this->getRoles());
+        return \in_array(self::ROLE_ADMIN, $this->getRoles(), true);
     }
 
     /** @return Collection<int, Intervention> */

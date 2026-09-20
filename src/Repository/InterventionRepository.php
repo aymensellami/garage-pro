@@ -8,6 +8,9 @@ use App\Entity\Intervention;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Intervention>
+ */
 class InterventionRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -20,7 +23,7 @@ class InterventionRepository extends ServiceEntityRepository
         $start = new \DateTime('first day of this month');
         $end = new \DateTime('last day of this month 23:59:59');
 
-        return $this->createQueryBuilder('i')
+        return (int) $this->createQueryBuilder('i')
             ->select('COUNT(i.id)')
             ->where('i.createdAt BETWEEN :start AND :end')
             ->setParameter('start', $start)
@@ -29,12 +32,13 @@ class InterventionRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    /**
+     * @return Intervention[]
+     */
     public function findPendingForDate(\DateTimeInterface $date): array
     {
-        $start = clone $date;
-        $start->setTime(0, 0);
-        $end = clone $date;
-        $end->setTime(23, 59, 59);
+        $start = \DateTimeImmutable::createFromInterface($date)->setTime(0, 0);
+        $end = \DateTimeImmutable::createFromInterface($date)->setTime(23, 59, 59);
 
         return $this->createQueryBuilder('i')
             ->where('i.scheduledAt BETWEEN :start AND :end')
@@ -64,6 +68,9 @@ class InterventionRepository extends ServiceEntityRepository
         return (float) ($result ?? 0);
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function getWeeklyActivity(): array
     {
         $days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -93,6 +100,9 @@ class InterventionRepository extends ServiceEntityRepository
         return $activity;
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function countByStatus(): array
     {
         $results = $this->createQueryBuilder('i')

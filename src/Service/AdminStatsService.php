@@ -27,6 +27,8 @@ class AdminStatsService
 
     /**
      * Statistiques globales de l'administration.
+     *
+     * @return array<string, int|float>
      */
     public function getGlobalStats(): array
     {
@@ -46,6 +48,8 @@ class AdminStatsService
 
     /**
      * Chiffre d'affaires par mois.
+     *
+     * @return array<int, array{month: string, revenue: string}>
      */
     public function getRevenueByMonth(int $months = 12): array
     {
@@ -71,6 +75,8 @@ class AdminStatsService
 
     /**
      * Nombre d'interventions par mois.
+     *
+     * @return array<int, array{month: string, count: string}>
      */
     public function getInterventionsByMonth(int $months = 12): array
     {
@@ -95,6 +101,8 @@ class AdminStatsService
 
     /**
      * Top clients selon le chiffre d'affaires généré.
+     *
+     * @return array<int, array{id: string, first_name: string, last_name: string, total: string}>
      */
     public function getTopCustomers(int $limit = 10): array
     {
@@ -127,6 +135,8 @@ class AdminStatsService
 
     /**
      * Top mécaniciens selon le nombre d'interventions et le revenu.
+     *
+     * @return array<int, array{id: string, first_name: string, last_name: string, count: string, revenue: string}>
      */
     public function getTopMechanics(int $limit = 10): array
     {
@@ -160,6 +170,8 @@ class AdminStatsService
 
     /**
      * Pièces actuellement en stock.
+     *
+     * @return array<int, array{name: string, stock_quantity: string, unit_price: string, value: string}>
      */
     public function getPartsByCategory(): array
     {
@@ -184,6 +196,8 @@ class AdminStatsService
 
     /**
      * Acquisition des nouveaux clients par mois.
+     *
+     * @return array<int, array{month: string, count: string}>
      */
     public function getCustomerAcquisition(int $months = 12): array
     {

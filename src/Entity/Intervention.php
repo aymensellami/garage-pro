@@ -39,6 +39,9 @@ class Intervention
     #[ORM\Column(type: 'text')]
     private ?string $description = null;
 
+    /**
+     * @var string[]
+     */
     #[ORM\Column(type: 'json')]
     private array $operations = [];
 
@@ -69,6 +72,9 @@ class Intervention
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $createdAt = null;
 
+    /**
+     * @var Collection<int, InterventionPart>
+     */
     #[ORM\OneToMany(mappedBy: 'intervention', targetEntity: InterventionPart::class, orphanRemoval: true)]
     private Collection $interventionParts;
 
@@ -88,7 +94,7 @@ class Intervention
     public function generateReference(): void
     {
         if (null === $this->reference) {
-            $this->reference = 'FI-'.\date('Y').'-'.\str_pad(\random_int(1, 9999), 4, '0', \STR_PAD_LEFT);
+            $this->reference = 'FI-'.\date('Y').'-'.\str_pad((string) \random_int(1, 9999), 4, '0', \STR_PAD_LEFT);
         }
     }
 
@@ -138,11 +144,17 @@ class Intervention
         return $this;
     }
 
+    /**
+     * @return string[]
+     */
     public function getOperations(): array
     {
         return $this->operations;
     }
 
+    /**
+     * @param string[] $operations
+     */
     public function setOperations(array $operations): static
     {
         $this->operations = $operations;
@@ -295,7 +307,7 @@ class Intervention
     {
         $this->status = self::STATUS_COMPLETED;
         $this->completedAt = new \DateTime();
-        if ($this->startedAt && $this->completedAt) {
+        if ($this->startedAt) {
             $this->durationMinutes = (int) (($this->completedAt->getTimestamp() - $this->startedAt->getTimestamp()) / 60);
         }
 
@@ -311,7 +323,7 @@ class Intervention
 
     public function canBeEdited(): bool
     {
-        return \in_array($this->status, [self::STATUS_PENDING, self::STATUS_IN_PROGRESS]);
+        return \in_array($this->status, [self::STATUS_PENDING, self::STATUS_IN_PROGRESS], true);
     }
 
     public function getInvoice(): ?Invoice
