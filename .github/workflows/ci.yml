@@ -165,13 +165,349 @@ jobs:
             --env=test
 
       # ----------------------------------------------------------
-      # 11. Création de la base TEST
+      # 11. Exécution des migrations
       # ----------------------------------------------------------
-      - name: Create test database
+      - name: Run migrations
         env:
           APP_ENV: test
           APP_DEBUG: '1'
           APP_SECRET: garagepro-ci-secret
           DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
         run: |
-          php bin/console doctrine:database:cr
+          php bin/console doctrine:migrations:migrate \
+            --no-interaction \
+            --env=test
+
+      # ----------------------------------------------------------
+      # 12. Validation Doctrine
+      # ----------------------------------------------------------
+      - name: Validate Doctrine mapping
+        env:
+          APP_ENV: test
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+        run: |
+          php bin/console doctrine:schema:validate \
+            --env=test
+
+      # ----------------------------------------------------------
+      # 13. Vérification syntaxe PHP
+      # ----------------------------------------------------------
+      - name: PHP syntax check
+        run: |
+          find src tests \
+            -name "*.php" \
+            -print0 | \
+            xargs -0 -n1 php -l
+
+      # ----------------------------------------------------------
+      # 14. PHPUnit
+      # ----------------------------------------------------------
+      - name: Run PHPUnit
+        env:
+          APP_ENV: test
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+          MAILER_DSN: "null://null"
+          MESSENGER_TRANSPORT_DSN: "in-memory://"
+        run: |
+          echo "========================================"
+          echo "Symfony test kernel"
+          echo "========================================"
+
+          php bin/console about --env=test
+
+          echo "========================================"
+          echo "Container validation"
+          echo "========================================"
+
+          php bin/console lint:container --env=test
+
+          echo "========================================"
+          echo "Clear Symfony cache"
+          echo "========================================"
+
+          php bin/console cache:clear --env=test
+
+          echo "========================================"
+          echo "Login route"
+          echo "========================================"
+
+          php bin/console debug:router app_login --env=test
+
+          echo "========================================"
+          echo "Admin route"
+          echo "========================================"
+
+          php bin/console debug:router app_admin_dashboard --env=test
+
+          echo "========================================"
+          echo "SecurityControllerTest"
+          echo "========================================"
+
+          mkdir -p var
+
+          vendor/bin/phpunit \
+            --configuration phpunit.xml.dist \
+            --filter 'SecurityControllerTest' \
+            --display-errors \
+            --display-warnings \
+            --display-deprecations \
+            --display-incomplete \
+            --display-skipped \
+            --testdox \
+            --log-junit var/phpunit.xml
+
+
+  # ============================================================
+  # JOB 2 : QUALITE DU CODE
+  # ============================================================
+  code-quality:
+    name: Qualite du code
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: garage_pro_test
+
+        ports:
+          - 3306:3306
+
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+
+      # ----------------------------------------------------------
+      # 1. Récupération du projet
+      # ----------------------------------------------------------
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ----------------------------------------------------------
+      # 2. Installation PHP 8.2
+      # ----------------------------------------------------------
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql, intl, mbstring, xml, zip, gd
+          coverage: none
+          tools: composer
+
+      # ----------------------------------------------------------
+      # 3. Vérification PHP et Composer
+      # ----------------------------------------------------------
+      - name: Environment information
+        run: |
+          echo "========================================"
+          echo "PHP version"
+          echo "========================================"
+          php -v
+
+          echo "========================================"
+          echo "Composer version"
+          echo "========================================"
+          composer --version
+
+      # ----------------------------------------------------------
+      # 4. Configuration environnement CI
+      # ----------------------------------------------------------
+      - name: Configure CI environment
+        run: |
+          cat > .env <<'EOF'
+          APP_ENV=test
+          APP_SECRET=garagepro-ci-secret
+          DATABASE_URL="mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+          MAILER_DSN="null://null"
+          MESSENGER_TRANSPORT_DSN="in-memory://"
+          EOF
+
+          cp .env .env.test
+
+      # ----------------------------------------------------------
+      # 5. Installation Composer
+      # ----------------------------------------------------------
+      - name: Install dependencies
+        env:
+          APP_ENV: test
+          APP_DEBUG: '1'
+        run: |
+          composer install \
+            --prefer-dist \
+            --no-progress \
+            --no-interaction
+
+      # ----------------------------------------------------------
+      # 6. Vérification versions PHPStan
+      # ----------------------------------------------------------
+      - name: PHPStan version
+        run: |
+          vendor/bin/phpstan --version
+
+          echo "========================================"
+          echo "PHPStan package"
+          echo "========================================"
+
+          composer show phpstan/phpstan
+
+          echo "========================================"
+          echo "PHPStan Doctrine extension"
+          echo "========================================"
+
+          composer show phpstan/phpstan-doctrine
+
+          echo "========================================"
+          echo "PHPStan Symfony extension"
+          echo "========================================"
+
+          composer show phpstan/phpstan-symfony
+
+      # ----------------------------------------------------------
+      # 7. Vérification syntaxe PHP
+      # ----------------------------------------------------------
+      - name: PHP syntax check
+        run: |
+          find src tests \
+            -name "*.php" \
+            -print0 | \
+            xargs -0 -n1 php -l
+
+      # ----------------------------------------------------------
+      # 8. Diagnostics PHP CS Fixer
+      # ----------------------------------------------------------
+      - name: PHP CS Fixer diagnostics
+        run: |
+          echo "========================================"
+          echo "PHP CS Fixer diagnostics"
+          echo "========================================"
+
+          echo "Checking configuration file..."
+          test -f .php-cs-fixer.dist.php
+
+          echo "Configuration file found:"
+          ls -lh .php-cs-fixer.dist.php
+
+          echo "PHP CS Fixer version:"
+          vendor/bin/php-cs-fixer --version
+
+          echo "PHP syntax check:"
+          php -l .php-cs-fixer.dist.php
+
+          echo "PHP CS Fixer configuration:"
+          vendor/bin/php-cs-fixer describe \
+            --config=.php-cs-fixer.dist.php
+
+      # ----------------------------------------------------------
+      # 9. PHP CS Fixer
+      # ----------------------------------------------------------
+      - name: PHP CS Fixer
+        run: |
+          echo "========================================"
+          echo "Running PHP CS Fixer"
+          echo "========================================"
+
+          vendor/bin/php-cs-fixer fix \
+            --config=.php-cs-fixer.dist.php \
+            --dry-run \
+            --diff \
+            --verbose
+
+      # ----------------------------------------------------------
+      # 10. Préparation du container Symfony DEV
+      # ----------------------------------------------------------
+      - name: Prepare Symfony dev container for PHPStan
+        env:
+          APP_ENV: dev
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+          MAILER_DSN: "null://null"
+          MESSENGER_TRANSPORT_DSN: "in-memory://"
+        run: |
+          echo "========================================"
+          echo "Preparing Symfony dev container"
+          echo "========================================"
+
+          php bin/console cache:clear --env=dev
+          php bin/console cache:warmup --env=dev
+
+          echo "========================================"
+          echo "Checking PHPStan Symfony container"
+          echo "========================================"
+
+          test -f var/cache/dev/App_KernelDevDebugContainer.xml
+
+          ls -lh var/cache/dev/App_KernelDevDebugContainer.xml
+
+      # ----------------------------------------------------------
+      # 11. PHPStan
+      # ----------------------------------------------------------
+      - name: PHPStan
+        env:
+          APP_ENV: dev
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+          MAILER_DSN: "null://null"
+          MESSENGER_TRANSPORT_DSN: "in-memory://"
+        run: |
+          echo "========================================"
+          echo "PHPStan analysis"
+          echo "========================================"
+
+          vendor/bin/phpstan analyse src \
+            --level=6 \
+            --no-progress
+
+      # ----------------------------------------------------------
+      # 12. Twig Lint
+      # ----------------------------------------------------------
+      - name: Twig Lint
+        env:
+          APP_ENV: test
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+          MAILER_DSN: "null://null"
+          MESSENGER_TRANSPORT_DSN: "in-memory://"
+        run: |
+          php bin/console lint:twig templates
+
+      # ----------------------------------------------------------
+      # 13. YAML Lint
+      # ----------------------------------------------------------
+      - name: YAML Lint
+        env:
+          APP_ENV: test
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+          MAILER_DSN: "null://null"
+          MESSENGER_TRANSPORT_DSN: "in-memory://"
+        run: |
+          php bin/console lint:yaml config
+
+      # ----------------------------------------------------------
+      # 14. Symfony Container Lint
+      # ----------------------------------------------------------
+      - name: Container Lint
+        env:
+          APP_ENV: test
+          APP_DEBUG: '1'
+          APP_SECRET: garagepro-ci-secret
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/garage_pro_test?serverVersion=8.0&charset=utf8mb4"
+          MAILER_DSN: "null://null"
+          MESSENGER_TRANSPORT_DSN: "in-memory://"
+        run: |
+          php bin/console lint:container --env=test
+
