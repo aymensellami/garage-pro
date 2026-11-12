@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Intervention;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -33,21 +34,29 @@ class InterventionRepository extends ServiceEntityRepository
     }
 
     /**
+     * Interventions à traiter pour une date donnée.
+     * Si $mechanic est fourni, seules ses interventions sont retournées.
+     *
      * @return Intervention[]
      */
-    public function findPendingForDate(\DateTimeInterface $date): array
+    public function findPendingForDate(\DateTimeInterface $date, ?User $mechanic = null): array
     {
         $start = \DateTimeImmutable::createFromInterface($date)->setTime(0, 0);
         $end = \DateTimeImmutable::createFromInterface($date)->setTime(23, 59, 59);
 
-        return $this->createQueryBuilder('i')
+        $qb = $this->createQueryBuilder('i')
             ->where('i.scheduledAt BETWEEN :start AND :end')
             ->andWhere('i.status IN (:statuses)')
             ->setParameter('start', $start)
             ->setParameter('end', $end)
-            ->setParameter('statuses', [Intervention::STATUS_PENDING, Intervention::STATUS_IN_PROGRESS])
-            ->getQuery()
-            ->getResult();
+            ->setParameter('statuses', [Intervention::STATUS_PENDING, Intervention::STATUS_IN_PROGRESS]);
+
+        if (null !== $mechanic) {
+            $qb->andWhere('i.mechanic = :mechanic')
+                ->setParameter('mechanic', $mechanic);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     public function getMonthlyRevenue(): float

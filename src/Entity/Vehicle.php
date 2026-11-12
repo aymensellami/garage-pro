@@ -8,9 +8,13 @@ use App\Repository\VehicleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VehicleRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[UniqueEntity(fields: ['registration'], message: 'Cette immatriculation est déjà enregistrée.')]
+#[UniqueEntity(fields: ['vin'], message: 'Ce numéro de série (VIN) est déjà enregistré.')]
 class Vehicle
 {
     #[ORM\Id]
@@ -19,30 +23,45 @@ class Vehicle
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'La marque est obligatoire.')]
+    #[Assert\Length(max: 100)]
     private ?string $brand = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'Le modèle est obligatoire.')]
+    #[Assert\Length(max: 100)]
     private ?string $model = null;
 
     #[ORM\Column(length: 20, unique: true)]
+    #[Assert\NotBlank(message: "L'immatriculation est obligatoire.")]
+    #[Assert\Length(max: 20)]
     private ?string $registration = null;
 
     #[ORM\Column(length: 50, unique: true, nullable: true)]
+    #[Assert\Length(max: 50)]
     private ?string $vin = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "L'année est obligatoire.")]
+    #[Assert\Range(min: 1950, max: 2100, notInRangeMessage: "L'année doit être comprise entre {{ min }} et {{ max }}.")]
     private ?int $year = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: 'Le kilométrage est obligatoire.')]
+    #[Assert\PositiveOrZero(message: 'Le kilométrage ne peut pas être négatif.')]
     private ?int $mileage = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message: 'Le carburant est obligatoire.')]
+    #[Assert\Length(max: 20)]
     private ?string $fuelType = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50)]
     private ?string $engineCode = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50)]
     private ?string $color = null;
 
     #[ORM\Column(type: 'date', nullable: true)]
@@ -50,6 +69,7 @@ class Vehicle
 
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Veuillez choisir un propriétaire.')]
     private ?Customer $owner = null;
 
     #[ORM\Column(type: 'datetime')]

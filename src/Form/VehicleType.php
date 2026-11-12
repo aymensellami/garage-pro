@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -23,24 +25,46 @@ class VehicleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('brand', TextType::class, ['label' => 'Marque'])
-            ->add('model', TextType::class, ['label' => 'Modèle'])
-            ->add('registration', TextType::class, ['label' => 'Immatriculation'])
-            ->add('vin', TextType::class, ['label' => 'N° de série (VIN)', 'required' => false])
+            ->add('brand', TextType::class, ['label' => 'Marque', 'trim' => true])
+            ->add('model', TextType::class, ['label' => 'Modèle', 'trim' => true])
+            ->add('registration', TextType::class, [
+                'label' => 'Immatriculation',
+                'trim' => true,
+                'attr' => ['placeholder' => '123 TUN 4567'],
+            ])
+            ->add('vin', TextType::class, [
+                'label' => 'N° de série (VIN)',
+                'required' => false,
+                'trim' => true,
+                'empty_data' => null,
+            ])
             ->add('year', IntegerType::class, ['label' => 'Année'])
-            ->add('mileage', IntegerType::class, ['label' => 'Kilométrage'])
+            ->add('mileage', IntegerType::class, [
+                'label' => 'Kilométrage',
+                'attr' => ['min' => 0],
+            ])
             ->add('fuelType', ChoiceType::class, [
                 'label' => 'Carburant',
                 'choices' => [
-                    'Essence' => 'essence',
-                    'Diesel' => 'diesel',
-                    'Hybride' => 'hybride',
-                    'Électrique' => 'electrique',
-                    'GPL' => 'gpl',
+                    'Essence' => 'Essence',
+                    'Diesel' => 'Diesel',
+                    'Hybride' => 'Hybride',
+                    'Électrique' => 'Électrique',
+                    'GPL' => 'GPL',
                 ],
             ])
-            ->add('engineCode', TextType::class, ['label' => 'Code moteur', 'required' => false])
-            ->add('color', TextType::class, ['label' => 'Couleur', 'required' => false])
+            ->add('engineCode', TextType::class, [
+                'label' => 'Code moteur',
+                'required' => false,
+                'trim' => true,
+                'empty_data' => null,
+            ])
+            ->add('color', TextType::class, [
+                'label' => 'Couleur',
+                'required' => false,
+                'trim' => true,
+                'empty_data' => null,
+            ])
             ->add('technicalControlDate', DateType::class, [
                 'label' => 'Date du dernier CT',
                 'widget' => 'single_text',
@@ -52,6 +76,16 @@ class VehicleType extends AbstractType
                 'choice_label' => 'fullName',
                 'placeholder' => 'Choisir un client',
             ]);
+
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, static function (FormEvent $event): void {
+            $data = $event->getData();
+            if (isset($data['registration']) && \is_string($data['registration'])) {
+                $data['registration'] = mb_strtoupper(
+                    (string) preg_replace('/\s+/', ' ', trim($data['registration']))
+                );
+                $event->setData($data);
+            }
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void

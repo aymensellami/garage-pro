@@ -27,6 +27,14 @@
     <div class="col-md-4">
         <div class="gp-card p-4">
             <h5 class="text-white mb-3">Actions</h5>
+
+            {# AJOUTÉ : bouton Modifier (visible selon le Voter) #}
+            {% if is_granted(constant('App\\Security\\Voter\\InterventionVoter::EDIT'), intervention) %}
+                <a href="{{ path('app_intervention_edit', {id: intervention.id}) }}" class="btn btn-warning w-100 mb-2">
+                    <i class="bi bi-pencil me-1"></i>Modifier
+                </a>
+            {% endif %}
+
             {% if intervention.status == 'pending' %}
                 <form method="post" action="{{ path('app_intervention_start', {id: intervention.id}) }}">
                     <button class="btn btn-primary w-100 mb-2"><i class="bi bi-play-fill me-1"></i>Démarrer</button>

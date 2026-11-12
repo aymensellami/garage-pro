@@ -34,22 +34,27 @@ class InterventionType extends AbstractType
                     $v->getModel().' ('.
                     $v->getRegistration().')',
                 'placeholder' => 'Sélectionnez un véhicule',
-            ])
+            ]);
 
-           ->add('mechanic', EntityType::class, [
-               'label' => 'Mécanicien',
-               'class' => User::class,
-               'choice_label' => 'fullName',
-               'required' => false,
-               'placeholder' => 'Sélectionnez un mécanicien',
-               'query_builder' => static function ($er) {
-                   return $er->createQueryBuilder('u')
-                       ->where('u.roles LIKE :role')
-                       ->setParameter('role', '%ROLE_MECHANIC%')
-                       ->orderBy('u.lastName', 'ASC');
-               },
-           ])
+        // Le champ mécanicien n'est affiché que si l'option l'autorise
+        // (admin en modification, ou création de fiche).
+        if ($options['can_assign_mechanic']) {
+            $builder->add('mechanic', EntityType::class, [
+                'label' => 'Mécanicien',
+                'class' => User::class,
+                'choice_label' => 'fullName',
+                'required' => false,
+                'placeholder' => 'Sélectionnez un mécanicien',
+                'query_builder' => static function ($er) {
+                    return $er->createQueryBuilder('u')
+                        ->where('u.roles LIKE :role')
+                        ->setParameter('role', '%ROLE_MECHANIC%')
+                        ->orderBy('u.lastName', 'ASC');
+                },
+            ]);
+        }
 
+        $builder
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
             ])
@@ -93,11 +98,16 @@ class InterventionType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Intervention::class,
             'vehicles' => [],
+            'can_assign_mechanic' => true,
         ]);
 
         $resolver->setAllowedTypes(
             'vehicles',
             'array'
+        );
+        $resolver->setAllowedTypes(
+            'can_assign_mechanic',
+            'bool'
         );
     }
 }

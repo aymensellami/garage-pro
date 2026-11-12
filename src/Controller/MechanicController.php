@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Repository\InterventionRepository;
 use App\Repository\MaintenanceAlertRepository;
 use App\Repository\PartRepository;
@@ -22,9 +23,17 @@ class MechanicController extends AbstractController
         MaintenanceAlertRepository $alertRepo,
         PartRepository $partRepo,
     ): Response {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
         $today = new \DateTime();
 
-        $pendingInterventions = $interventionRepo->findPendingForDate($today);
+        // Admin : tout le planning du jour. Mécanicien : uniquement le sien.
+        $mechanic = $this->isGranted('ROLE_ADMIN') ? null : $user;
+        $pendingInterventions = $interventionRepo->findPendingForDate($today, $mechanic);
 
         $alerts = $alertRepo->findBy(
             ['isResolved' => false],

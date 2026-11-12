@@ -100,6 +100,17 @@
                         <i class="bi bi-eye me-1"></i>
                         Détails
                     </a>
+
+                    {# AJOUTÉ : lien Modifier (visible selon le Voter) #}
+                    {% if is_granted(constant('App\\Security\\Voter\\InterventionVoter::EDIT'), i) %}
+                        <a
+                            href="{{ path('app_intervention_edit', {id: i.id}) }}"
+                            class="btn btn-sm btn-outline-warning"
+                        >
+                            <i class="bi bi-pencil me-1"></i>
+                            Modifier
+                        </a>
+                    {% endif %}
                 </td>
 
             </tr>
@@ -119,7 +130,7 @@
 
     </table>
 </div>
-```
+
 
 </div>
 
