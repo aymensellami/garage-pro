@@ -80,8 +80,8 @@ class VehicleType extends AbstractType
         $builder->addEventListener(FormEvents::PRE_SUBMIT, static function (FormEvent $event): void {
             $data = $event->getData();
             if (isset($data['registration']) && \is_string($data['registration'])) {
-                $data['registration'] = mb_strtoupper(
-                    (string) preg_replace('/\s+/', ' ', trim($data['registration']))
+                $data['registration'] = \mb_strtoupper(
+                    (string) \preg_replace('/\s+/', ' ', \trim($data['registration']))
                 );
                 $event->setData($data);
             }
